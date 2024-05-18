@@ -60,7 +60,7 @@ if __name__=='__main__':
     calib_size = 32
     cfg = cfg_modifier(linear_ptq_setting=(1,1,1), metric="hessian", bit_setting=(8,8))
     #os.chdir('.') #/raid/ori.sch/PTQ4ViT
-    RUN_ITER = 300
+    #RUN_ITER = 300
     IMG_PATH = '/datasets/ImageNet'
     
     quant_cfg = init_config(config_name)
@@ -76,13 +76,13 @@ if __name__=='__main__':
 
     # add timing
     calib_start_time = time.time()
-    quant_calibrator = HessianQuantCalibrator(net,wrapped_modules,calib_loader,sequential=False,batch_size=1) # 16 is too big for ViT-L-16
+    quant_calibrator = HessianQuantCalibrator(net,wrapped_modules,calib_loader,sequential=False,batch_size=4) # 16 is too big for ViT-L-16
     quant_calibrator.batching_quant_calib()
     calib_end_time = time.time()
     print(f"calibration time: {(calib_end_time-calib_start_time)/60}min")
     
     acc_start_time = time.time()
-    acc = test_classification(net,test_loader, description=quant_cfg.ptqsl_linear_kwargs["metric"], max_iteration=RUN_ITER) #max_iteration=RUN_ITER,
+    acc = test_classification(net,test_loader, description=quant_cfg.ptqsl_linear_kwargs["metric"]) #max_iteration=RUN_ITER,
     acc_end_time = time.time()
     print(f"original accuracy: {acc}")
     print(f"original run time: {(acc_end_time-acc_start_time)/60}min")
