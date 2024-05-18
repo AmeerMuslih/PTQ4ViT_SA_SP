@@ -127,3 +127,33 @@ def get_model_int_weight(wrapped_modules):
             pass
     
     return int_weights
+
+def get_model_weight(wrapped_modules):
+    """
+    Get weights (in int8) of a model.
+
+    Return:
+        A dict, with modules' names as keys, and int weights as values.
+    """
+
+    weights = {}
+
+    for name, m in wrapped_modules.items():
+        try:
+            weights[name] = m
+        except:
+            pass
+    
+    return weights
+
+def set_model_weight(wrapped_modules, weights):
+    """
+    Set weights (in int8) for a model.
+
+    Args:
+        wrapped_modules: A dictionary of wrapped modules, with module names as keys and module objects as values.
+        weights: A dictionary of int weights, with module names as keys and int weight tensors as values.
+    """
+    for name, m in wrapped_modules.items():
+        if name in weights:
+            m = weights[name]

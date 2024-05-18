@@ -13,6 +13,7 @@ from itertools import product
 import types
 from utils.quant_calib import HessianQuantCalibrator, QuantCalibrator
 from utils.models import get_net
+from utils.integer import get_model_weight, set_model_weight
 import time
 #from example import nb_smt #nb_4smt
 import example
@@ -74,13 +75,21 @@ if __name__=='__main__':
     test_loader=g.test_loader()
     calib_loader=g.calib_loader(num=calib_size,seed=88)
 
-    # add timing
-    calib_start_time = time.time()
-    quant_calibrator = HessianQuantCalibrator(net,wrapped_modules,calib_loader,sequential=False,batch_size=4) # 16 is too big for ViT-L-16
-    quant_calibrator.batching_quant_calib()
-    calib_end_time = time.time()
-    print(f"calibration time: {(calib_end_time-calib_start_time)/60}min")
+    weights_path = f"./weights/{name}.pth"
+    if os.path.exists(weights_path):
+        weights = torch.load(weights_path)
+        set_model_weight(wrapped_modules, weights)
+        print("weights loaded")
+    else:
+        calib_start_time = time.time()
+        quant_calibrator = HessianQuantCalibrator(net,wrapped_modules,calib_loader,sequential=False,batch_size=4) # 16 is too big for ViT-L-16
+        quant_calibrator.batching_quant_calib()
+        calib_end_time = time.time()
+        print(f"calibration time: {(calib_end_time-calib_start_time)/60}min")
+        weights = get_model_weight(wrapped_modules)
+        torch.save(weights, weights_path)
     
+    # add timing
     acc_start_time = time.time()
     acc = test_classification(net,test_loader, description=quant_cfg.ptqsl_linear_kwargs["metric"]) #max_iteration=RUN_ITER,
     acc_end_time = time.time()
