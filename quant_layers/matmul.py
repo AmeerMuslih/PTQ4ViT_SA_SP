@@ -22,6 +22,8 @@ class MinMaxQuantMatMul(nn.Module):
     def forward(self, A,B):
         if self.mode=='raw':
             #print("mul 1")
+            print(A.shape)
+            print(B.shape)
             X, Y, Z, W = A.shape
             assert B.shape == (X, Y, W, Z)
             A_3d = A.cpu().detach().reshape(X*Y, Z, W).double()
