@@ -23,9 +23,9 @@ class MinMaxQuantMatMul(nn.Module):
         if self.mode=='raw':
             #print("mul 1")
             X, Y, Z, W = A.shape
-            assert B.shape == (X, Y, W, -1), "The last dimension of B should be flexible"
-            X, Y, W, L= B.Shape
-            
+            _, _, _, L = B.shape
+            assert B.shape == (X, Y, W, L), "The last dimension of B should be flexible"
+
             A_3d = A.cpu().detach().reshape(X*Y, Z, W).double()
             B_3d = B.cpu().detach().reshape(X*Y, W, L).double()
 
