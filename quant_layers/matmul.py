@@ -22,23 +22,23 @@ class MinMaxQuantMatMul(nn.Module):
     def forward(self, A,B):
         if self.mode=='raw':
             #print("mul 1")
-            print(A.shape)
-            print(B.shape)
             X, Y, Z, W = A.shape
-            assert B.shape == (X, Y, W, Z)
+            assert B.shape == (X, Y, W, -1), "The last dimension of B should be flexible"
+            X, Y, W, L= B.Shape
+            
             A_3d = A.cpu().detach().reshape(X*Y, Z, W).double()
-            B_3d = B.cpu().detach().reshape(X*Y, W, Z).double()
+            B_3d = B.cpu().detach().reshape(X*Y, W, L).double()
 
             A_extended = np.zeros((X*Y * Z, X*Y * W))
             for i in range(X*Y):
                 A_extended[i*Z: i*Z+Z, i*W:i*W+W] = A_3d[i, :, :]
 
-            B_extended = B_3d.reshape(X*Y * W, Z)
+            B_extended = B_3d.reshape(X*Y * W, L)
             A_extended_tensor = torch.from_numpy(A_extended)  # Convert numpy array to PyTorch tensor
             result_2d = A_extended_tensor @ B_extended
-            result_3d = result_2d.reshape(X*Y, Z, Z)
+            result_3d = result_2d.reshape(X*Y, Z, L)
             # Reshape result back into the original shape
-            out = result_3d.reshape(X, Y, Z, Z)
+            out = result_3d.reshape(X, Y, Z, L)
             # out=A @ B
         elif self.mode=="quant_forward":
             out=self.quant_forward(A,B)
