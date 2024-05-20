@@ -24,8 +24,8 @@ class MinMaxQuantMatMul(nn.Module):
             #print("mul 1")
             X, Y, Z, W = A.shape
             assert B.shape == (X, Y, W, Z)
-            A_3d = A.cpu().detach().reshape(X*Y, Z, W)
-            B_3d = B.cpu().detach().reshape(X*Y, W, Z)
+            A_3d = A.cpu().detach().reshape(X*Y, Z, W).float()
+            B_3d = B.cpu().detach().reshape(X*Y, W, Z).float()
 
             A_extended = np.zeros((X*Y * Z, X*Y * W))
             for i in range(X*Y):
