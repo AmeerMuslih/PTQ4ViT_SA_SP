@@ -21,6 +21,7 @@ class MinMaxQuantMatMul(nn.Module):
     
     def forward(self, A,B):
         if self.mode=='raw':
+            print("mul 1")
             out=A @ B
         elif self.mode=="quant_forward":
             out=self.quant_forward(A,B)
@@ -41,12 +42,14 @@ class MinMaxQuantMatMul(nn.Module):
         assert self.calibrated is not None,f"You should run calibrate_forward before run quant_forward for {self}"
         A_sim=self.quant_input(A,self.A_interval,self.A_qmax)
         B_sim=self.quant_input(B,self.B_interval,self.B_qmax)
+        print("mul 2")
         out=A_sim@B_sim
         return out
 
     def calibration_step1(self,A,B):
         # step1: collection the FP32 values
         self.raw_input=A.cpu().detach(), B.cpu().detach()
+        print("mul 3")
         out=A@B
         self.raw_out=out.cpu().detach()
         return out
@@ -141,6 +144,7 @@ class PTQSLQuantMatMul(MinMaxQuantMatMul):
         assert self.calibrated is not None,f"You should run calibrate_forward before run quant_forward for {self}"
         A_sim=self.quant_input_A(A)
         B_sim=self.quant_input_B(B)
+        print("mul 4")
         out=A_sim@B_sim
         return out
 
@@ -196,6 +200,7 @@ class PTQSLQuantMatMul(MinMaxQuantMatMul):
                 A_sim = A_sim[:,:,:A.shape[1],:A.shape[2],:A.shape[3]] # shape: parallel_eq_n,B,H,dim1,dim2
                 # quantize B, this quantization is optimized out of loop
                 # calculate similarity and store them
+                print("mul 5")
                 out_sim = A_sim @ B_sim # shape: parallel_eq_n,B,H,dim1,dim3
                 similarity = self._get_similarity(self.raw_out, out_sim, self.metric) # shape: parallel_eq_n,B,H,dim1
                 similarity = similarity.mean([1,3]) # shape: parallel_eq_n,H (remaining mean operation will be done later on)
@@ -229,6 +234,7 @@ class PTQSLQuantMatMul(MinMaxQuantMatMul):
                 B_sim = B_sim.view(p_ed-p_st,-1,B.shape[1]+self.pad_groups_B,B.shape[2]+self.pad_rows_B,B.shape[3]+self.pad_cols_B) # shape: parallel_eq_n,B,H*,dim2*,dim3* (* stand for padding)
                 B_sim = B_sim[:,:,:B.shape[1],:B.shape[2],:B.shape[3]] # shape: parallel_eq_n,B,H,dim2,dim3
                 # calculate similarity and store them
+                print("mul 6")
                 out_sim = A_sim @ B_sim # shape: parallel_eq_n,B,H,dim1,dim3
                 similarity = self._get_similarity(self.raw_out, out_sim, self.metric) # shape: parallel_eq_n,B,H,dim1
                 similarity = similarity.mean([1,3]) # shape: parallel_eq_n,H (remaining mean operation will be done later on)
@@ -333,6 +339,7 @@ class SoSPTQSLQuantMatMul(PTQSLQuantMatMul):
             A_sim = A_high + A_low # shape: 1,B,H,S,S
             # quantize B, this quantization is optimized out of loop
             # calculate similarity and store them (dim1=dim2=S, dim3=W)
+            print("mul 7")
             out_sim = A_sim @ B_sim # shape: 1,B,H,dim1,dim3
             similarity = self._get_similarity(self.raw_out, out_sim, self.metric) # shape: parallel_eq_n,B,H,dim1
             similarity = similarity.mean([1,2,3]) # shape: 1
@@ -507,6 +514,7 @@ class PTQSLBatchingQuantMatMul(PTQSLQuantMatMul):
                     A_sim = A_sim[:,:,:A.shape[1],:A.shape[2],:A.shape[3]] # shape: parallel_eq_n,b,H,dim1,dim2
                     # quantize B, this quantization is optimized out of loop
                     # calculate similarity and store them
+                    print("mul 8")
                     out_sim = A_sim @ B_sim # shape: parallel_eq_n,B,H,dim1,dim3
                     similarity = self._get_similarity(raw_out, out_sim, self.metric, raw_grad=raw_grad) # shape: parallel_eq_n,b,H,dim1
                     similarity = similarity.mean([3]) # shape: parallel_eq_n,b,H (remaining mean operation will be done later on)
@@ -548,6 +556,7 @@ class PTQSLBatchingQuantMatMul(PTQSLQuantMatMul):
                     B_sim = B_sim.view(p_ed-p_st,-1,B.shape[1]+self.pad_groups_B,B.shape[2]+self.pad_rows_B,B.shape[3]+self.pad_cols_B) # shape: parallel_eq_n,b,H*,dim2*,dim3* (* stand for padding)
                     B_sim = B_sim[:,:,:B.shape[1],:B.shape[2],:B.shape[3]] # shape: parallel_eq_n,b,H,dim2,dim3
                     # calculate similarity and store them
+                    print("mul 9")
                     out_sim = A_sim @ B_sim # shape: parallel_eq_n,b,H,dim1,dim3
                     similarity = self._get_similarity(raw_out, out_sim, self.metric, raw_grad=raw_grad) # shape: parallel_eq_n,b,H,dim1
                     similarity = similarity.mean([3]) # shape: parallel_eq_n,b,H (remaining mean operation will be done later on)
@@ -615,6 +624,7 @@ class SoSPTQSLBatchingQuantMatMul(PTQSLBatchingQuantMatMul):
                 A_sim = A_high + A_low # shape: 1,b,H,S,S
                 # quantize B, this quantization is optimized out of loop
                 # calculate similarity and store them (dim1=dim2=S, dim3=W)
+                print("mul a")
                 out_sim = A_sim @ B_sim # shape: 1,b,H,dim1,dim3
                 similarity = self._get_similarity(raw_out, out_sim, self.metric, raw_grad=raw_grad) # shape: parallel_eq_n,b,H,dim1
                 similarity = similarity.mean([2,3]) # shape: parallel_eq_n, b

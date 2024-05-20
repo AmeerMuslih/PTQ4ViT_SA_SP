@@ -57,6 +57,7 @@ def window_attention_forward(self, x, mask = None):
 
 class MatMul(nn.Module):
     def forward(self, A, B):
+        print("mul b")
         return A @ B
 
 def get_net(name):
