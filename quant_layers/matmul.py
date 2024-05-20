@@ -29,12 +29,12 @@ class MinMaxQuantMatMul(nn.Module):
             A_3d = A.detach().reshape(X*Y, Z, W)
             B_3d = B.detach().reshape(X*Y, W, L)
 
-            A_extended = torch.zeros((X*Y * Z, X*Y * W))
+            A_extended = torch.zeros((X*Y * Z, X*Y * W), device='cuda')
             for i in range(X*Y):
                 A_extended[i*Z: i*Z+Z, i*W:i*W+W] = A_3d[i, :, :]
 
-            B_extended = B_3d.reshape(X*Y * W, L)
-            result_2d = A_extended.cuda() @ B_extended
+            B_extended = B_3d.reshape(X*Y * W, L).to('cuda')
+            result_2d = A_extended @ B_extended
             result_3d = result_2d.reshape(X*Y, Z, L)
             # Reshape result back into the original shape
             out = result_3d.reshape(X, Y, Z, L)
