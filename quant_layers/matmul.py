@@ -26,8 +26,8 @@ class MinMaxQuantMatMul(nn.Module):
             _, _, _, L = B.shape
             assert B.shape == (X, Y, W, L), "The last dimension of B should be flexible"
 
-            A_3d = A.detach().reshape(X*Y, Z, W).double()
-            B_3d = B.detach().reshape(X*Y, W, L).double()
+            A_3d = A.detach().reshape(X*Y, Z, W)
+            B_3d = B.detach().reshape(X*Y, W, L)
 
             A_extended = torch.zeros((X*Y * Z, X*Y * W))
             for i in range(X*Y):
