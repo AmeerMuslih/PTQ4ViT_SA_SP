@@ -32,7 +32,8 @@ class MinMaxQuantMatMul(nn.Module):
                 A_extended[i*Z: i*Z+Z, i*W:i*W+W] = A_3d[i, :, :]
 
             B_extended = B_3d.reshape(X*Y * W, Z)
-            result_2d = A_extended @ B_extended
+            A_extended_tensor = torch.from_numpy(A_extended)  # Convert numpy array to PyTorch tensor
+            result_2d = A_extended_tensor @ B_extended
             result_3d = result_2d.reshape(X*Y, Z, Z)
             # Reshape result back into the original shape
             out = result_3d.reshape(X, Y, Z, Z)
