@@ -7,17 +7,17 @@ B = np.random.rand(X, Y, W, Z)
 
 # Option 1
 A_3d = A.reshape(X*Y, Z, W)
-B_3d = B.reshape(X*Y, W, Z)
+B_3d = B.reshape(X*Y*W, Z)
 
 A_extended = np.zeros((X*Y * Z, X*Y * W))
 for i in range(X*Y):
     A_extended[i*Z: i*Z+Z, i*W:i*W+W] = A_3d[i, :, :]
 
-B_extended = B_3d.reshape(X*Y * W, Z)
-result_2d = A_extended @ B_extended
-result_3d = result_2d.reshape(X*Y, Z, Z)
+# B_extended = B_3d.reshape(X*Y * W, Z)
+result_2d = A_extended @ B_3d
+result_3d = result_2d.reshape(X, Y, Z, Z)
 # Reshape result back into the original shape
-result = result_3d.reshape(X, Y, Z, Z)
+result = result_3d # result_3d.reshape(X, Y, Z, Z)
 
 # Option 2
 # # Initialize a result matrix with the same shape
@@ -33,5 +33,5 @@ result = result_3d.reshape(X, Y, Z, Z)
 # Reshape A and B into 2D matrices
 
 # Uncomment the following line to make sure the asertion works as expected
-# result[0][0][0][0]=0
+result[0][0][0][0]=0
 np.testing.assert_array_equal(result, A@B)

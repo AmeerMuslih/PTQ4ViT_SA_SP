@@ -39,7 +39,7 @@ class MinMaxQuantConv2d(nn.Conv2d):
         
     def forward(self, x):
         if self.mode=='raw':
-            print("conv 1")
+            # print("conv 1")
             out=F.conv2d(x, self.weight, self.bias, self.stride, self.padding, self.dilation, self.groups)
         elif self.mode=="quant_forward":
             out=self.quant_forward(x)
@@ -71,13 +71,13 @@ class MinMaxQuantConv2d(nn.Conv2d):
         assert self.calibrated is not None,f"You should run calibrate_forward before run quant_forward for {self}"
         w_sim,bias_sim=self.quant_weight_bias()
         x_sim=self.quant_input(x)
-        print("conv 2")
+        # print("conv 2")
         out=F.conv2d(x_sim, w_sim, bias_sim, self.stride, self.padding, self.dilation, self.groups)
         return out
 
     def calibration_step1(self,x):
         # step1: collection the FP32 values
-        print("conv 3")
+        # print("conv 3")
         out=F.conv2d(x, self.weight, self.bias, self.stride, self.padding, self.dilation, self.groups)
         self.raw_input=x.cpu().detach()
         self.raw_out=out.cpu().detach()
@@ -211,7 +211,7 @@ class PTQSLQuantConv2d(MinMaxQuantConv2d):
                 # quantize input
                 x_sim = self.quant_input(x)
                 # calculate similarity and store them
-                print("conv 3")
+                # print("conv 3")
                 out_sim = F.conv2d(x_sim, w_sim, bias_sim, self.stride, self.padding, self.dilation, self.groups) # shape: B,parallel_eq_n*oc,fw,fh
                 out_sim = torch.cat(torch.chunk(out_sim.unsqueeze(1), chunks=p_ed-p_st, dim=2), dim=1) # shape: B,parallel_eq_n,oc,fw,fh
                 similarity = self._get_similarity(self.raw_out, out_sim, self.metric, dim=2) # shape: B,parallel_eq_n,fw,fh
@@ -236,7 +236,7 @@ class PTQSLQuantConv2d(MinMaxQuantConv2d):
             x_sim=(x_sim/(cur_a_interval)).round_().clamp_(-self.a_qmax,self.a_qmax-1)*(cur_a_interval) # shape: parallel_eq_n,B,ic,iw,ih
             x_sim=x_sim.view(-1,ic,iw,ih)
             # calculate similarity and store them
-            print("conv 4")
+            # print("conv 4")
             out_sim = F.conv2d(x_sim, w_sim, bias_sim, self.stride, self.padding, self.dilation, self.groups) # shape: parallel_eq_n*B,oc,fw,fh
             out_sim = torch.cat(torch.chunk(out_sim.unsqueeze(0), chunks=p_ed-p_st, dim=1), dim=0) # shape: parallel_eq_n,B,oc,fw,fh
             similarity = self._get_similarity(self.raw_out.transpose(0,1), out_sim, self.metric, dim=2) # shape: parallel_eq_n,B,fw,fh
@@ -364,7 +364,7 @@ class BatchingEasyQuantConv2d(PTQSLQuantConv2d):
         assert self.calibrated is not None,f"You should run calibrate_forward before run quant_forward for {self}"
         w_sim,bias_sim=self.quant_weight_bias()
         x_sim=self.quant_input(x) if self.a_bit < 32 else x
-        print("conv 5")
+        # print("conv 5")
         out=F.conv2d(x_sim, w_sim, bias_sim, self.stride, self.padding, self.dilation, self.groups)
         return out
 
@@ -388,7 +388,7 @@ class BatchingEasyQuantConv2d(PTQSLQuantConv2d):
                 # quantize input
                 x_sim = self.quant_input(x)
                 # calculate similarity and store them
-                print("conv 6")
+                # print("conv 6")
                 out_sim = F.conv2d(x_sim, w_sim, bias_sim, self.stride, self.padding, self.dilation, self.groups) # shape: b,parallel_eq_n*oc,fw,fh
                 out_sim = torch.cat(torch.chunk(out_sim.unsqueeze(1), chunks=p_ed-p_st, dim=2), dim=1) # shape: b,parallel_eq_n,oc,fw,fh
                 similarity = self._get_similarity(raw_out, out_sim, self.metric, dim=-3, raw_grad=raw_grad) # shape: b,parallel_eq_n,fw,fh
@@ -421,7 +421,7 @@ class BatchingEasyQuantConv2d(PTQSLQuantConv2d):
                 x_sim=(x_sim/(cur_a_interval)).round_().clamp_(-self.a_qmax,self.a_qmax-1)*(cur_a_interval) # shape: parallel_eq_n,b,ic,iw,ih
                 x_sim=x_sim.view(-1,ic,iw,ih) # shape: parallel_eq_n*b,ic,iw,ih
                 # calculate similarity and store them
-                print("conv 7")
+                # print("conv 7")
                 out_sim = F.conv2d(x_sim, w_sim, bias_sim, self.stride, self.padding, self.dilation, self.groups) # shape: parallel_eq_n*b,oc,fw,fh
                 out_sim = torch.cat(torch.chunk(out_sim.unsqueeze(0), chunks=p_ed-p_st, dim=1), dim=0) # shape: parallel_eq_n,b,oc,fw,fh
                 similarity = self._get_similarity(raw_out, out_sim, self.metric, dim=-3, raw_grad=raw_grad) # shape: parallel_eq_n,b,fw,fh
@@ -551,7 +551,7 @@ class ChannelwiseBatchingQuantConv2d(PTQSLQuantConv2d):
                 # quantize input
                 x_sim = self.quant_input(x) if self.a_bit < 32 else x
                 # calculate similarity and store them
-                print("conv 8")
+                # print("conv 8")
                 out_sim = F.conv2d(x_sim, w_sim, bias_sim, self.stride, self.padding, self.dilation, self.groups) # shape: b,parallel_eq_n*oc,fw,fh
                 out_sim = torch.cat(torch.chunk(out_sim.unsqueeze(1), chunks=p_ed-p_st, dim=2), dim=1) # shape: b,parallel_eq_n,oc,fw,fh
                 similarity = self._get_similarity(raw_out, out_sim, self.metric, raw_grad) # shape: b,parallel_eq_n,oc,fw,fh
@@ -584,7 +584,7 @@ class ChannelwiseBatchingQuantConv2d(PTQSLQuantConv2d):
                 x_sim=(x_sim/(cur_a_interval)).round_().clamp_(-self.a_qmax,self.a_qmax-1)*(cur_a_interval) # shape: parallel_eq_n,b,ic,iw,ih
                 x_sim=x_sim.view(-1,ic,iw,ih) # shape: parallel_eq_n*b,ic,iw,ih
                 # calculate similarity and store them
-                print("conv 9")
+                # print("conv 9")
                 out_sim = F.conv2d(x_sim, w_sim, bias_sim, self.stride, self.padding, self.dilation, self.groups) # shape: parallel_eq_n*b,oc,fw,fh
                 out_sim = torch.cat(torch.chunk(out_sim.unsqueeze(0), chunks=p_ed-p_st, dim=1), dim=0) # shape: parallel_eq_n,b,oc,fw,fh
                 out_sim = out_sim.transpose_(0, 1) # shape: b,parallel_eq_n,oc,fw,fh
@@ -620,6 +620,6 @@ class ChannelwiseBatchingQuantConv2d(PTQSLQuantConv2d):
         assert self.calibrated is not None,f"You should run calibrate_forward before run quant_forward for {self}"
         w_sim,bias_sim=self.quant_weight_bias()
         x_sim=self.quant_input(x) if self.a_bit < 32 else x
-        print("conv a")
+        # print("conv a")
         out=F.conv2d(x_sim, w_sim, bias_sim, self.stride, self.padding, self.dilation, self.groups)
         return out
