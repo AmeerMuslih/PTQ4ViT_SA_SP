@@ -34,9 +34,10 @@ class MinMaxQuantMatMul(nn.Module):
                 A_extended[i*Z: i*Z+Z, i*W:i*W+W] = A_3d[i, :, :]
 
             B_extended = B.reshape(X * Y * W, L).to('cuda')
-            #print(A_extended.shape, B_extended.shape)
-            #result_2d = A_extended @ B_extended
-            result_2d = matmul_sa(A_extended, B_extended)
+            print(A_extended.shape)
+            print(B_extended.shape)
+            result_2d = A_extended @ B_extended
+            #result_2d = matmul_sa(A_extended, B_extended)
             # Reshape result back into the original shape
             out = result_2d.reshape(X, Y, Z, L)
             # out=A @ B
