@@ -19,6 +19,7 @@ import time
 import example
 #from example.nb_smt import NbSmtMatMul,NbSmtLinear,NbSmtMatMulScores, NbSmtGeluLinear
 import copy
+from Matmul_SA import csvFilesMaker
 
 HF_HUB_DISABLE_SYMLINKS_WARNING=1
 
@@ -95,6 +96,7 @@ if __name__=='__main__':
     acc_end_time = time.time()
     print(f"original accuracy: {acc}")
     print(f"original run time: {(acc_end_time-acc_start_time)/60}min")
+    csvFilesMaker()
     
     # for j in range(6):
     #     model = copy.deepcopy(net)

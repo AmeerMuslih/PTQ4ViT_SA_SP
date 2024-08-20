@@ -4,6 +4,7 @@ from torch import nn
 from torch import Tensor 
 from torch.nn import functional as F
 from itertools import product     
+from Matmul_SA import matmul_sa
 
 class MinMaxQuantMatMul(nn.Module):
     """Matrix Multiplication base class"""
@@ -33,7 +34,9 @@ class MinMaxQuantMatMul(nn.Module):
                 A_extended[i*Z: i*Z+Z, i*W:i*W+W] = A_3d[i, :, :]
 
             B_extended = B.reshape(X * Y * W, L).to('cuda')
-            result_2d = A_extended @ B_extended
+            #print(A_extended.shape, B_extended.shape)
+            #result_2d = A_extended @ B_extended
+            result_2d = matmul_sa(A_extended, B_extended)
             # Reshape result back into the original shape
             out = result_2d.reshape(X, Y, Z, L)
             # out=A @ B
