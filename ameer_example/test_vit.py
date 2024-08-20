@@ -32,7 +32,6 @@ def test_classification(net,test_loader,max_iteration=None, description=None):
         q=tqdm(test_loader, desc=description)
         for inp,target in q:
             i+=1
-            print(f"Iteration: {i}")
             inp=inp.cuda()
             target=target.cuda()
             out=net(inp)

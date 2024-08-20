@@ -81,7 +81,24 @@ def matmul_sa(tensor_a, tensor_b):
 	ToggleCount_InputA_Bits += InputAToggle
 	ToggleCount_InputB_Bits += InputBToggle
 	totalCycles += cycles
-	print("Cycles = ",cycles)
+	checkpoint = {
+		'all_util': all_util,
+		'Accumulator_TOT': Accumulator_TOT,
+		'InputA_TOT': InputA_TOT,
+		'InputB_TOT': InputB_TOT,
+		'ToggleCount_MultiplierBits': ToggleCount_MultiplierBits,
+		'ToggleCount_InputA_Bits': ToggleCount_InputA_Bits,
+		'ToggleCount_InputB_Bits': ToggleCount_InputB_Bits,
+		'ToggleCount_Accumulator_Bits': ToggleCount_Accumulator_Bits,
+		'totalCycles': totalCycles
+	}
+
+	# Save checkpoint to file
+	checkpoint_file = '/home/a.mosa/PTQ4ViT_SA_SP/OutputFiles/checkpoint.txt'
+	with open(checkpoint_file, 'w') as f:
+		f.write(str(checkpoint))
+
+	print("Cycles = ", cycles)
 		
 
 		
