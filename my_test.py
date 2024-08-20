@@ -1,6 +1,6 @@
 #packages that need to be install: torch, torchVision, timm, 
 from torch.nn.modules import module
-from example.test_vit import *
+from ameer_example.test_vit import *
 from quant_layers.conv import MinMaxQuantConv2d
 from quant_layers.linear import MinMaxQuantLinear, PTQSLQuantLinear
 from quant_layers.matmul import MinMaxQuantMatMul, PTQSLQuantMatMul
@@ -16,7 +16,7 @@ from utils.models import get_net
 from utils.integer import get_model_weight, set_model_weight
 import time
 #from example import nb_smt #nb_4smt
-import example
+import ameer_example
 #from example.nb_smt import NbSmtMatMul,NbSmtLinear,NbSmtMatMulScores, NbSmtGeluLinear
 import copy
 from Matmul_SA import csvFilesMaker
