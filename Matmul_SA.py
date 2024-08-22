@@ -36,7 +36,7 @@ def csvFilesMaker():
 		ToggleCount_Accumulator_Bits = ToggleCount_Accumulator_Bits/totalCycles
 
 		filenamek_csv = "UtilityFor"+str(dim)+"X"+str(dim)+"Dim.csv"
-		Destination_path = "/home/a.mosa/AS_SP/OutputFiles/" #"/home/firasramadan/miniconda3/project_quantization_8bit/c_smt_sa/OutputFiles/Group-" + str(GroupID)+ "/"
+		Destination_path = "/home/a.mosa/Ameer/PTQ4ViT_SA_SP/OutputFiles/" #"/home/firasramadan/miniconda3/project_quantization_8bit/c_smt_sa/OutputFiles/Group-" + str(GroupID)+ "/"
 		all_util_df = pd.DataFrame(all_util[:,:,0].numpy())
 		all_util_df.to_csv(Destination_path + filenamek_csv,header = False, index = False)
     
@@ -94,7 +94,7 @@ def matmul_sa(tensor_a, tensor_b):
 	}
 
 	# Save checkpoint to file
-	checkpoint_file = '/home/a.mosa/PTQ4ViT_SA_SP/OutputFiles/checkpoint.txt'
+	checkpoint_file = '/home/a.mosa/Ameer/PTQ4ViT_SA_SP/OutputFiles/checkpoint.txt'
 	with open(checkpoint_file, 'w') as f:
 		f.write(str(checkpoint))
 
