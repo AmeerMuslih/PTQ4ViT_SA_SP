@@ -38,7 +38,7 @@ class MinMaxQuantMatMul(nn.Module):
             print(B_extended.shape)
             #result_2d = (A_extended @ B_extended.detach().cpu()).to('cuda')
             if(A_extended.shape==torch.Size([75648, 24576])):
-                result_2d = (A_extended @ B_extended).to('cuda')
+                result_2d = (A_extended.to('cuda') @ B_extended)
             else:
                 result_2d = matmul_sa(A_extended, B_extended).to('cuda')
             # Reshape result back into the original shape
