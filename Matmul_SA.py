@@ -68,9 +68,17 @@ def csvFilesMaker():
 			accum_df = pd.DataFrame(Accumulator_TOT[:,:,bits-1].numpy())
 			accum_df.to_csv(Destination_path + filename_csv_accum,header = False, index = False)
 
+def percentage_of_zeros(tensor):
+    total_elements = tensor.numel()  # Total number of elements in the tensor
+    zero_elements = torch.sum(tensor == 0).item()  # Number of zeros in the tensor
+    percentage = (zero_elements / total_elements) * 100
+    return percentage
+
 def matmul_sa(tensor_a, tensor_b):
 	a = tensor_a
 	b = tensor_b
+	print("Percentage of zeroes A = ", percentage_of_zeros(a))
+	print("Percentage of zeroes B = ", percentage_of_zeros(b))
 	dut, util, cycles, PUs_access_count,AccumulatorBitsCount,Input_A_BitsCount,Input_B_BitsCount,MultiplierToggle,AccumulatorToggle,InputAToggle,InputBToggle = c_smt_sa.exec(a[None,:,:].detach().cpu(),b[:,:].detach().cpu(), dim, 1, 1024)
 	all_util += PUs_access_count
 	Accumulator_TOT += AccumulatorBitsCount
