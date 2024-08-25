@@ -75,6 +75,16 @@ def percentage_of_zeros(tensor):
     return percentage
 
 def matmul_sa(tensor_a, tensor_b):
+	global all_util
+	global Accumulator_TOT
+	global InputA_TOT
+	global InputB_TOT
+	global ToggleCount_MultiplierBits
+	global ToggleCount_InputA_Bits
+	global ToggleCount_InputB_Bits
+	global ToggleCount_Accumulator_Bits
+	global totalCycles
+
 	a = tensor_a
 	b = tensor_b
 	print("Percentage of zeroes A = ", percentage_of_zeros(a))
