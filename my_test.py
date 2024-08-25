@@ -74,14 +74,14 @@ if __name__=='__main__':
 
     g=datasets.ViTImageNetLoaderGenerator(IMG_PATH,'imagenet',32,32,2, kwargs={"model":net}) 
     test_loader=g.test_loader()
-    calib_loader=g.calib_loader(num=calib_size,seed=88)
-
+    
     weights_path = f"./weights/{name}.pth"
     if os.path.exists(weights_path):
         weights = torch.load(weights_path)
         set_model_weight(wrapped_modules, weights)
         print("weights loaded")
     else:
+        calib_loader=g.calib_loader(num=calib_size,seed=88)
         calib_start_time = time.time()
         quant_calibrator = HessianQuantCalibrator(net,wrapped_modules,calib_loader,sequential=False,batch_size=4) # 16 is too big for ViT-L-16
         quant_calibrator.batching_quant_calib()
