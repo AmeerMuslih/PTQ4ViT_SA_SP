@@ -87,8 +87,8 @@ def matmul_sa(tensor_a, tensor_b):
 
 	a = tensor_a
 	b = tensor_b
-	print("Percentage of zeroes A = ", percentage_of_zeros(a))
-	print("Percentage of zeroes B = ", percentage_of_zeros(b))
+	#print("Percentage of zeroes A = ", percentage_of_zeros(a))
+	#print("Percentage of zeroes B = ", percentage_of_zeros(b))
 	dut, util, cycles, PUs_access_count,AccumulatorBitsCount,Input_A_BitsCount,Input_B_BitsCount,MultiplierToggle,AccumulatorToggle,InputAToggle,InputBToggle = c_smt_sa.exec(a[None,:,:].detach().cpu(),b[:,:].detach().cpu(), dim, 1, 1024)
 	all_util += PUs_access_count
 	Accumulator_TOT += AccumulatorBitsCount
@@ -112,12 +112,12 @@ def matmul_sa(tensor_a, tensor_b):
 	}
 
 	# Save checkpoint to file
-	checkpoint_file = '/home/a.mosa/Ameer/PTQ4ViT_SA_SP/OutputFiles/checkpoint.txt'
-	with open(checkpoint_file, 'w') as f:
-		f.write(str(checkpoint))
+	#checkpoint_file = '/home/a.mosa/Ameer/PTQ4ViT_SA_SP/OutputFiles/checkpoint.txt'
+	# with open(checkpoint_file, 'w') as f:
+	# 	f.write(str(checkpoint))
 
-	print("Cycles = ", cycles)
-	print(dut.shape)
+	#print("Cycles = ", cycles)
+	#print(dut.shape)
 	return dut
 		
 

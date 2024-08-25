@@ -23,15 +23,16 @@ class MinMaxQuantMatMul(nn.Module):
     def forward(self, A,B):
         if self.mode=='raw':
             X, Y, Z, W = A.shape
-            print(A.shape)
+            #print(A.shape)
             _, _, _, L = B.shape
-            print(B.shape)
+            #print(B.shape)
             result = torch.zeros((X, Y, Z, L))
 
             for i in range(X):
                 for j in range(Y):
                     # Perform 2D matrix multiplication for each pair of 2D matrices in the last two dimensions
                     #result[i, j] = A[i, j] @ B[i, j]
+                    print("Iteration ", i*X+j)
                     result[i, j] = matmul_sa(A[i, j], B[i, j]).to('cuda')
 
             # if(A_extended.shape==torch.Size([75648, 24576])):
