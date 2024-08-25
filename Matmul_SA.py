@@ -117,6 +117,8 @@ def matmul_sa(tensor_a, tensor_b):
 		f.write(str(checkpoint))
 
 	print("Cycles = ", cycles)
+	print(dut.shape)
+	return dut
 		
 
 		
