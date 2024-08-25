@@ -22,27 +22,24 @@ class MinMaxQuantMatMul(nn.Module):
     
     def forward(self, A,B):
         if self.mode=='raw':
-            #print("mul 1")
             X, Y, Z, W = A.shape
+            print(A.shape)
             _, _, _, L = B.shape
-            assert B.shape == (X, Y, W, L), "The last dimension of B should be flexible"
+            print(B.shape)
+            result = torch.zeros((X, Y, Z, L))
 
-            A_3d = A.detach().reshape(X*Y, Z, W)
+            for i in range(X):
+                for j in range(Y):
+                    # Perform 2D matrix multiplication for each pair of 2D matrices in the last two dimensions
+                    #result[i, j] = A[i, j] @ B[i, j]
+                    result[i, j] = matmul_sa(A[i, j], B[i, j]).to('cuda')
 
-            A_extended = torch.zeros((X*Y * Z, X*Y * W))
-            for i in range(X*Y):
-                A_extended[i*Z: i*Z+Z, i*W:i*W+W] = A_3d[i, :, :]
-
-            B_extended = B.reshape(X * Y * W, L)
-            print(A_extended.shape)
-            print(B_extended.shape)
-            #result_2d = (A_extended @ B_extended.detach().cpu()).to('cuda')
-            if(A_extended.shape==torch.Size([75648, 24576])):
-                result_2d = (A_extended.to('cuda') @ B_extended)
-            else:
-                result_2d = matmul_sa(A_extended, B_extended).to('cuda')
+            # if(A_extended.shape==torch.Size([75648, 24576])):
+            #     result_2d = (A_extended.to('cuda') @ B_extended)
+            # else:
+            #     result_2d = matmul_sa(A_extended, B_extended).to('cuda')
             # Reshape result back into the original shape
-            out = result_2d.reshape(X, Y, Z, L)
+            out = result
             
             # out=A @ B
         elif self.mode=="quant_forward":
