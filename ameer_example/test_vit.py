@@ -23,7 +23,7 @@ def parse_args():
     args = parser.parse_args()
     return args
 
-def test_classification(net,test_loader,max_iteration=None, description=None):
+def test_classification(net,test_loader, start_idx=0, max_iteration=None, description=None):
     pos=0
     tot=0
     i = 0
@@ -32,6 +32,8 @@ def test_classification(net,test_loader,max_iteration=None, description=None):
         q=tqdm(test_loader, desc=description)
         for inp,target in q:
             i+=1
+            if i<=start_idx:
+                continue
             inp=inp.cuda()
             target=target.cuda()
             out=net(inp)

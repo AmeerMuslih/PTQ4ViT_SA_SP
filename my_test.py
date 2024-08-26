@@ -15,11 +15,8 @@ from utils.quant_calib import HessianQuantCalibrator, QuantCalibrator
 from utils.models import get_net
 from utils.integer import get_model_weight, set_model_weight
 import time
-#from example import nb_smt #nb_4smt
-import ameer_example
-#from example.nb_smt import NbSmtMatMul,NbSmtLinear,NbSmtMatMulScores, NbSmtGeluLinear
-import copy
 from Matmul_SA import csvFilesMaker
+import sys
 
 HF_HUB_DISABLE_SYMLINKS_WARNING=1
 
@@ -64,7 +61,7 @@ if __name__=='__main__':
     #os.chdir('.') #/raid/ori.sch/PTQ4ViT
     #RUN_ITER = 300
     IMG_PATH = '/datasets/ImageNet'
-    
+    start_idx = int(sys.argv[1])
     quant_cfg = init_config(config_name)
     quant_cfg = cfg(quant_cfg)
 
@@ -92,7 +89,7 @@ if __name__=='__main__':
     
     # add timing
     acc_start_time = time.time()
-    acc = test_classification(net,test_loader, description=quant_cfg.ptqsl_linear_kwargs["metric"], max_iteration=30) #max_iteration=RUN_ITER,
+    acc = test_classification(net,test_loader, description=quant_cfg.ptqsl_linear_kwargs["metric"], start_idx=start_idx, max_iteration=1) #max_iteration=RUN_ITER,
     acc_end_time = time.time()
     print(f"original accuracy: {acc}")
     print(f"original run time: {(acc_end_time-acc_start_time)/60}min")
