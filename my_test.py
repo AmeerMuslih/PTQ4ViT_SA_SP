@@ -15,7 +15,6 @@ from utils.quant_calib import HessianQuantCalibrator, QuantCalibrator
 from utils.models import get_net
 from utils.integer import get_model_weight, set_model_weight
 import time
-from Matmul_SA import csvFilesMaker
 import sys
 import os
 
@@ -97,7 +96,6 @@ if __name__=='__main__':
     acc_end_time = time.time()
     print(f"original accuracy: {acc}")
     print(f"original run time: {(acc_end_time-acc_start_time)/60}min")
-    #csvFilesMaker()
     
     # for j in range(6):
     #     model = copy.deepcopy(net)
