@@ -17,6 +17,7 @@ from utils.integer import get_model_weight, set_model_weight
 import time
 from Matmul_SA import csvFilesMaker
 import sys
+import os
 
 HF_HUB_DISABLE_SYMLINKS_WARNING=1
 
@@ -64,6 +65,7 @@ if __name__=='__main__':
     start_idx = int(sys.argv[1])
     assert start_idx >= 0 and start_idx < 1000
     print(f"Classifying image: {start_idx}")
+    os.environ['start_idx'] = str(start_idx)
     quant_cfg = init_config(config_name)
     quant_cfg = cfg(quant_cfg)
 
@@ -95,7 +97,7 @@ if __name__=='__main__':
     acc_end_time = time.time()
     print(f"original accuracy: {acc}")
     print(f"original run time: {(acc_end_time-acc_start_time)/60}min")
-    csvFilesMaker()
+    #csvFilesMaker()
     
     # for j in range(6):
     #     model = copy.deepcopy(net)
