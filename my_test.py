@@ -62,6 +62,8 @@ if __name__=='__main__':
     #RUN_ITER = 300
     IMG_PATH = '/datasets/ImageNet'
     start_idx = int(sys.argv[1])
+    assert start_idx >= 0 and start_idx < 1000
+    print(f"Classifying image: {start_idx}")
     quant_cfg = init_config(config_name)
     quant_cfg = cfg(quant_cfg)
 
