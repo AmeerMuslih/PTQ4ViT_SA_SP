@@ -34,6 +34,7 @@ def test_classification(net,test_loader, start_idx=0, max_iteration=None, descri
             i+=1
             if i<=start_idx:
                 continue
+            print(inp)
             inp=inp.cuda()
             target=target.cuda()
             out=net(inp)
