@@ -21,28 +21,7 @@ class MinMaxQuantMatMul(nn.Module):
         self.raw_out = None
     
     def forward(self, A,B):
-        if self.mode=='raw':
-            # print("FUCK")
-            # X, Y, Z, W = A.shape
-            # #print(A.shape)
-            # _, _, _, L = B.shape
-            # #print(B.shape)
-            # result = torch.zeros((X, Y, Z, L))
-
-            # for i in range(X):
-            #     for j in range(Y):
-            #         # Perform 2D matrix multiplication for each pair of 2D matrices in the last two dimensions
-            #         #result[i, j] = A[i, j] @ B[i, j]
-            #         print("Iteration ", i*Y+j)
-            #         result[i, j] = matmul_sa(A[i, j], B[i, j])
-
-            # # if(A_extended.shape==torch.Size([75648, 24576])):
-            # #     result_2d = (A_extended.to('cuda') @ B_extended)
-            # # else:
-            # #     result_2d = matmul_sa(A_extended, B_extended).to('cuda')
-            # # Reshape result back into the original shape
-            # out = result.to('cuda')
-            
+        if self.mode=='raw':   
             out=self.calibration_step23(A,B)
         elif self.mode== "quant_forward":
             out=self.quant_forward(A,B)
@@ -54,10 +33,24 @@ class MinMaxQuantMatMul(nn.Module):
             raise NotImplementedError
         return out
     
+    def SA_mul(self, A, B):
+        X, Y, Z, W = A.shape
+        #print(A.shape)
+        _, _, _, L = B.shape
+        #print(B.shape)
+        result = torch.zeros((X, Y, Z, L))
+
+        for i in range(X):
+            for j in range(Y):
+                # Perform 2D matrix multiplication for each pair of 2D matrices in the last two dimensions
+                #result[i, j] = A[i, j] @ B[i, j]
+                print("Iteration ", i*Y+j)
+                result[i, j] = matmul_sa(A[i, j], B[i, j])
+        return result.to('cuda')
+
     def quant_input(self,x,interval,qmax):
         x_sim=(x/interval).round_().clamp_(-qmax,qmax-1)
         #x_sim.mul_(interval)
-        print("interval is ",interval)
         return x_sim
     
     def quant_forward1(self,A,B):
@@ -65,7 +58,8 @@ class MinMaxQuantMatMul(nn.Module):
         A_sim=self.quant_input(A,self.A_interval,self.A_qmax)
         B_sim=self.quant_input(B,self.B_interval,self.B_qmax)
         #print("mul 2")
-        out=A_sim@B_sim
+        #out=A_sim@B_sim
+        out = self.SA_mul(A_sim, B_sim)
         out.mul_(self.A_interval).mul_(self.B_interval)
         return out
 
