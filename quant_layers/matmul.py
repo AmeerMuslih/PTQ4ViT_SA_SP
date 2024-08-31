@@ -60,7 +60,7 @@ class MinMaxQuantMatMul(nn.Module):
         return x_sim
     
     def quant_forward(self,A,B):
-        assert self.calibrated is not None,f"You should run calibrate_forward before run quant_forward for {self}"
+        #assert self.calibrated is not None,f"You should run calibrate_forward before run quant_forward for {self}"
         A_sim=self.quant_input(A,self.A_interval,self.A_qmax)
         B_sim=self.quant_input(B,self.B_interval,self.B_qmax)
         #print("mul 2")

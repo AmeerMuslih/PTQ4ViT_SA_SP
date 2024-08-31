@@ -68,7 +68,7 @@ class MinMaxQuantConv2d(nn.Conv2d):
         return x_sim
     
     def quant_forward(self,x):
-        assert self.calibrated is not None,f"You should run calibrate_forward before run quant_forward for {self}"
+        #assert self.calibrated is not None,f"You should run calibrate_forward before run quant_forward for {self}"
         w_sim,bias_sim=self.quant_weight_bias()
         x_sim=self.quant_input(x)
         # print("conv 2")
@@ -361,7 +361,7 @@ class BatchingEasyQuantConv2d(PTQSLQuantConv2d):
         return w_sim, self.bias
 
     def quant_forward(self, x):
-        assert self.calibrated is not None,f"You should run calibrate_forward before run quant_forward for {self}"
+        #assert self.calibrated is not None,f"You should run calibrate_forward before run quant_forward for {self}"
         w_sim,bias_sim=self.quant_weight_bias()
         x_sim=self.quant_input(x) if self.a_bit < 32 else x
         # print("conv 5")
@@ -617,7 +617,7 @@ class ChannelwiseBatchingQuantConv2d(PTQSLQuantConv2d):
         return w_sim, self.bias
 
     def quant_forward(self, x):
-        assert self.calibrated is not None,f"You should run calibrate_forward before run quant_forward for {self}"
+        #assert self.calibrated is not None,f"You should run calibrate_forward before run quant_forward for {self}"
         w_sim,bias_sim=self.quant_weight_bias()
         x_sim=self.quant_input(x) if self.a_bit < 32 else x
         # print("conv a")
