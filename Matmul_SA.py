@@ -23,7 +23,7 @@ ToggleCount_MultiplierBits = torch.zeros(dim,dim,16,2)
 ToggleCount_InputA_Bits = torch.zeros(dim,dim,8,2)
 ToggleCount_InputB_Bits = torch.zeros(dim,dim,8,2)
 ToggleCount_Accumulator_Bits = torch.zeros(dim,dim,32,2)
-totalCycles=0
+totalCycles=torch.zeros(1)
 		
 
 def percentage_of_zeros(tensor):
@@ -74,7 +74,7 @@ def matmul_sa(tensor_a, tensor_b):
 	}
 
 	# Save checkpoint to file
-	checkpoint_file = f'/home/firasramadan/Ameer/PTQ4ViT_SA_SP/OutputFiles/image_{start_idx}_results.txt'
+	checkpoint_file = f'/home/a.mosa/Ameer/PTQ4ViT_SA_SP/OutputFiles/image_{start_idx}_results.txt'
 	with open(checkpoint_file, 'w') as f:
 		f.write(str(checkpoint))
 
@@ -83,4 +83,8 @@ def matmul_sa(tensor_a, tensor_b):
 	return dut
 		
 
-		
+if __name__=='__main__':
+	a = torch.randint(10000,(128,128))
+	b = torch.randint(100000,(128,128))
+	matmul_sa(a,b)
+	assert torch.allclose(matmul_sa(a,b), torch.matmul(a,b))
