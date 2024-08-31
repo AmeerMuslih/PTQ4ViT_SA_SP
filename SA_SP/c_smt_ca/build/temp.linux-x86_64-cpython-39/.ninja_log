@@ -1,0 +1,7 @@
+# ninja log v5
+1	378	1724054962606648000	/home/a.mosa/AS_SP/c_smt_ca/build/temp.linux-x86_64-cpython-39/fifo.o	abdda2c3a6d8f45
+10	438	1724054962667640000	/home/a.mosa/AS_SP/c_smt_ca/build/temp.linux-x86_64-cpython-39/node_pu_os.o	681173d590e5d880
+8	468	1724054962697646000	/home/a.mosa/AS_SP/c_smt_ca/build/temp.linux-x86_64-cpython-39/node_mem.o	8dabda26b030273e
+3	25054	1724054987273664000	/home/a.mosa/AS_SP/c_smt_ca/build/temp.linux-x86_64-cpython-39/grid_os.o	de8b8a0f8578877e
+12	25075	1724054987293677000	/home/a.mosa/AS_SP/c_smt_ca/build/temp.linux-x86_64-cpython-39/smt_sa_os.o	1fcd651ec33483ed
+5	27206	1724054989426678000	/home/a.mosa/AS_SP/c_smt_ca/build/temp.linux-x86_64-cpython-39/main.o	db5c79a769fd7610
