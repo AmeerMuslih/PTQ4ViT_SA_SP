@@ -57,7 +57,10 @@ def matmul_sa(tensor_a, tensor_b):
 		
 
 if __name__=='__main__':
-	a = torch.randint(10000,(128,128))
-	b = torch.randint(100000,(128,128))
-	matmul_sa(a,b)
-	assert torch.allclose(matmul_sa(a,b), torch.matmul(a,b))
+    a = torch.randint(10000, (128, 128), dtype=torch.int64)
+    b = torch.randint(100000, (128, 128), dtype=torch.int64)
+    
+    result_sa = matmul_sa(a, b)
+    result_torch = torch.matmul(a, b)
+    
+    assert torch.allclose(result_sa, result_torch)

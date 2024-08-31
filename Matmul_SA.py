@@ -81,10 +81,3 @@ def matmul_sa(tensor_a, tensor_b):
 	#print("Cycles = ", cycles)
 	#print(dut.shape)
 	return dut
-		
-
-if __name__=='__main__':
-	a = torch.randint(10000,(128,128))
-	b = torch.randint(100000,(128,128))
-	matmul_sa(a,b)
-	assert torch.allclose(matmul_sa(a,b), torch.matmul(a,b))
