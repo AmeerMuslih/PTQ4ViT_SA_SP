@@ -34,10 +34,6 @@ class MinMaxQuantMatMul(nn.Module):
                     # Perform 2D matrix multiplication for each pair of 2D matrices in the last two dimensions
                     #result[i, j] = A[i, j] @ B[i, j]
                     print("Iteration ", i*Y+j)
-                    print(A[i, j].shape)
-                    print(A)
-                    print(B[i, j].shape)
-                    print(B)
                     result[i, j] = matmul_sa(A[i, j], B[i, j])
 
             # if(A_extended.shape==torch.Size([75648, 24576])):
