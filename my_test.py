@@ -92,7 +92,7 @@ if __name__=='__main__':
     
     # add timing
     acc_start_time = time.time()
-    acc = test_classification(net,test_loader, description=quant_cfg.ptqsl_linear_kwargs["metric"], start_idx=start_idx, max_iteration=1) #max_iteration=RUN_ITER,
+    acc = test_classification(net,test_loader, description=quant_cfg.ptqsl_linear_kwargs["metric"], start_idx=start_idx, max_iteration=1)
     acc_end_time = time.time()
     print(f"original accuracy: {acc}")
     print(f"original run time: {(acc_end_time-acc_start_time)/60}min")

@@ -31,9 +31,9 @@ class MinMaxQuantLinear(nn.Linear):
         self.bias_correction = bias_correction
 
     def forward(self, x):
-        if self.mode=='raw':
+        if self.mode=="null":
             out=F.linear(x, self.weight, self.bias)
-        elif self.mode=="quant_forward":
+        elif self.mode=="raw": #"quant_forward":
             out=self.quant_forward(x)
         elif self.mode=="calibration_step1":
             out=self.calibration_step1(x)
