@@ -21,7 +21,7 @@ class MinMaxQuantMatMul(nn.Module):
         self.raw_out = None
     
     def forward(self, A,B):
-        if self.mode=='null':
+        if self.mode=='raw':
             print("FUCK")
             X, Y, Z, W = A.shape
             #print(A.shape)
@@ -44,7 +44,7 @@ class MinMaxQuantMatMul(nn.Module):
             out = result.to('cuda')
             
             # out=A @ B
-        elif self.mode== "raw" or self.mode== "quant_forward":
+        elif self.mode== "quant_forward":
             out=self.quant_forward(A,B)
         elif self.mode=="calibration_step1":
             out=self.calibration_step1(A,B)

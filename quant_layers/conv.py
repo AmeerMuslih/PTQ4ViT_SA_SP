@@ -38,10 +38,10 @@ class MinMaxQuantConv2d(nn.Conv2d):
         # self.bias_qmax=2**(self.bias_bit-1)
         
     def forward(self, x):
-        if self.mode=='null':
+        if self.mode=='raw':
             # print("conv 1")
             out=F.conv2d(x, self.weight, self.bias, self.stride, self.padding, self.dilation, self.groups)
-        elif self.mode== "raw" or self.mode== "quant_forward":
+        elif self.mode== "quant_forward":
             out=self.quant_forward(x)
         elif self.mode=="calibration_step1":
             out=self.calibration_step1(x)
