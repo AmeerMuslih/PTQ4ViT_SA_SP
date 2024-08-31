@@ -43,7 +43,7 @@ class MinMaxQuantMatMul(nn.Module):
             # # Reshape result back into the original shape
             # out = result.to('cuda')
             
-            out=self.calibration_step2(A,B)
+            out=self.calibration_step23(A,B)
         elif self.mode== "quant_forward":
             out=self.quant_forward(A,B)
         elif self.mode=="calibration_step1":
@@ -79,7 +79,7 @@ class MinMaxQuantMatMul(nn.Module):
         self.raw_out=out.cpu().detach()
         return out
     
-    def calibration_step2(self,A,B):
+    def calibration_step23(self,A,B):
         # step2: search for the best S^w and S^o of each layer
         self.A_interval=(A.data.abs().max()/(self.A_qmax-0.5)).detach()
         self.B_interval=(B.data.abs().max()/(self.B_qmax-0.5)).detach()
