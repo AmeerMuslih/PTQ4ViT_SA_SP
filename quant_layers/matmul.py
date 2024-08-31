@@ -56,7 +56,7 @@ class MinMaxQuantMatMul(nn.Module):
     
     def quant_input(self,x,interval,qmax):
         x_sim=(x/interval).round_().clamp_(-qmax,qmax-1)
-        x_sim.mul_(interval)
+        #x_sim.mul_(interval)
         print("interval is ",interval)
         return x_sim
     
@@ -70,6 +70,7 @@ class MinMaxQuantMatMul(nn.Module):
         print(B_sim.shape)
         print(B_sim)
         out=A_sim@B_sim
+        out.mul_(self.A_interval).mul_(self.B_interval)
         return out
 
     def calibration_step1(self,A,B):
