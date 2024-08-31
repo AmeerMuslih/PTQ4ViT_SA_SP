@@ -63,7 +63,10 @@ if __name__=='__main__':
     IMG_PATH = '/datasets/ImageNet'
     start_idx = int(sys.argv[1])
     assert start_idx >= 0 and start_idx < 1000
-    print(f"Classifying image: {start_idx}")
+    print(f"Firstly Classifying image: {start_idx}")
+    num_iter = int(sys.argv[2])
+    assert num_iter >= 0 and num_iter < 1000
+    print(f"Number of iterations: {num_iter}")
     os.environ['start_idx'] = str(start_idx)
     quant_cfg = init_config(config_name)
     quant_cfg = cfg(quant_cfg)
@@ -92,7 +95,7 @@ if __name__=='__main__':
     
     # add timing
     acc_start_time = time.time()
-    acc = test_classification(net,test_loader, description=quant_cfg.ptqsl_linear_kwargs["metric"], start_idx=start_idx, max_iteration=1)
+    acc = test_classification(net,test_loader, description=quant_cfg.ptqsl_linear_kwargs["metric"], start_idx=start_idx, max_iteration=num_iter)
     acc_end_time = time.time()
     print(f"original accuracy: {acc}")
     print(f"original run time: {(acc_end_time-acc_start_time)/60}min")

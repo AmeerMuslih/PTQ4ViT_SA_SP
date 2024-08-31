@@ -65,10 +65,6 @@ class MinMaxQuantMatMul(nn.Module):
         A_sim=self.quant_input(A,self.A_interval,self.A_qmax)
         B_sim=self.quant_input(B,self.B_interval,self.B_qmax)
         #print("mul 2")
-        print(A_sim.shape)
-        print(A_sim)
-        print(B_sim.shape)
-        print(B_sim)
         out=A_sim@B_sim
         out.mul_(self.A_interval).mul_(self.B_interval)
         return out
