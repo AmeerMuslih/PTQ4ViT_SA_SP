@@ -43,7 +43,7 @@ class MinMaxQuantMatMul(nn.Module):
             # # Reshape result back into the original shape
             # out = result.to('cuda')
             
-            out=self.quant_forward(A,B)
+            out=self.calibration_step2(A,B)
         elif self.mode== "quant_forward":
             out=self.quant_forward(A,B)
         elif self.mode=="calibration_step1":
