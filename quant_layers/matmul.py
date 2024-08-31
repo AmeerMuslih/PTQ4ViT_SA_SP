@@ -59,7 +59,7 @@ class MinMaxQuantMatMul(nn.Module):
         x_sim.mul_(interval)
         return x_sim
     
-    def quant_forward(self,A,B):
+    def quant_forward1(self,A,B):
         assert self.calibrated is not None,f"You should run calibrate_forward before run quant_forward for {self}"
         A_sim=self.quant_input(A,self.A_interval,self.A_qmax)
         B_sim=self.quant_input(B,self.B_interval,self.B_qmax)
@@ -84,7 +84,7 @@ class MinMaxQuantMatMul(nn.Module):
         self.A_interval=(A.data.abs().max()/(self.A_qmax-0.5)).detach()
         self.B_interval=(B.data.abs().max()/(self.B_qmax-0.5)).detach()
         self.calibrated=True
-        out=self.quant_forward(A,B)        
+        out=self.quant_forward1(A,B)        
         return out
 
 class PTQSLQuantMatMul(MinMaxQuantMatMul):
