@@ -8,7 +8,7 @@ from Matmul_SA import matmul_sa
 
 class MinMaxQuantMatMul(nn.Module):
     """Matrix Multiplication base class"""
-    def __init__(self, A_bit=8, B_bit=8, mode="raw"):
+    def __init__(self, A_bit=8, B_bit=8, mode="quant_forward"):
         super().__init__()
         self.A_bit=A_bit
         self.B_bit=B_bit
@@ -22,6 +22,7 @@ class MinMaxQuantMatMul(nn.Module):
     
     def forward(self, A,B):
         if self.mode=='raw':
+            print("FUCK")
             X, Y, Z, W = A.shape
             #print(A.shape)
             _, _, _, L = B.shape
@@ -67,6 +68,10 @@ class MinMaxQuantMatMul(nn.Module):
         A_sim=self.quant_input(A,self.A_interval,self.A_qmax)
         B_sim=self.quant_input(B,self.B_interval,self.B_qmax)
         #print("mul 2")
+        print(A_sim.shape)
+        print(A_sim)
+        print(B_sim.shape)
+        print(B_sim)
         out=A_sim@B_sim
         return out
 

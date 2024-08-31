@@ -18,7 +18,7 @@ class MinMaxQuantConv2d(nn.Conv2d):
         dilation = 1,
         groups: int = 1,
         bias: bool = True,
-        padding_mode: str = 'zeros',mode='raw',w_bit=8,a_bit=8,bias_bit=None):
+        padding_mode: str = 'zeros',mode='quant_forward',w_bit=8,a_bit=8,bias_bit=None):
         super().__init__(in_channels,out_channels,kernel_size,stride,padding,dilation,groups,bias,padding_mode)
         self.n_calibration_steps=2
         self.mode=mode

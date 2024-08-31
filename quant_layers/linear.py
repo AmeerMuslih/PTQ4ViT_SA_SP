@@ -8,7 +8,7 @@ class MinMaxQuantLinear(nn.Linear):
         in_features: int,
         out_features: int,
         bias: bool = True,
-        mode = "raw",
+        mode = "quant_forward",
         w_bit = 8,
         a_bit = 8,
         bias_bit = None,
