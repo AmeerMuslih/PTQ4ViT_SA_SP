@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for ((i=0; i<1; i++))
+for ((i=0; i<50; i++))
 do
-    nohup srun --gres=gpu:1 --mem=32G python3 ./my_test.py $i 1 & disown
+    nohup srun --gres=gpu:1 --mem=32G python3 ./my_test.py $i 2 & disown
 done
