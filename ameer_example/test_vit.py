@@ -34,8 +34,8 @@ def test_classification(net,test_loader, start_idx=0, max_iteration=None, descri
             i+=1
             if i<=start_idx:
                 continue
-            inp=inp.cuda()
-            target=target.cuda()
+            inp=inp.cpu()
+            target=target.cpu()
             out=net(inp)
             pos_num=torch.sum(out.argmax(1)==target).item()
             pos+=pos_num
@@ -51,7 +51,7 @@ def process(pid, experiment_process, args_queue, n_gpu):
     worker process. 
     """
     gpu_id=pid%n_gpu
-    os.environ['CUDA_VISIBLE_DEVICES']=f'{gpu_id}'
+    os.environ['CPU_VISIBLE_DEVICES']=f'{gpu_id}'
 
     tot_run=0
     while args_queue.qsize():

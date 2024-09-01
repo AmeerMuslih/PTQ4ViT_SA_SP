@@ -266,8 +266,8 @@ class PTQSLQuantConv2d(MinMaxQuantConv2d):
         self.raw_grad = self.raw_grad.to(x.device) if self.raw_grad != None else None
 
         # prepare weight intervals and similarities
-        weight_interval_candidates = torch.tensor([self.eq_alpha + i*(self.eq_beta - self.eq_alpha)/self.eq_n for i in range(self.eq_n + 1)]).cuda().view(-1,1,1,1,1) * self.w_interval.unsqueeze(0) # shape: eq_n,n_V,1,n_H,1
-        input_interval_candidates =  torch.tensor([self.eq_alpha + i*(self.eq_beta - self.eq_alpha)/self.eq_n for i in range(self.eq_n + 1)]).cuda().view(-1,1,1,1,1) * self.a_interval # shape: nq_n,1,1,1,1
+        weight_interval_candidates = torch.tensor([self.eq_alpha + i*(self.eq_beta - self.eq_alpha)/self.eq_n for i in range(self.eq_n + 1)]).cpu().view(-1,1,1,1,1) * self.w_interval.unsqueeze(0) # shape: eq_n,n_V,1,n_H,1
+        input_interval_candidates =  torch.tensor([self.eq_alpha + i*(self.eq_beta - self.eq_alpha)/self.eq_n for i in range(self.eq_n + 1)]).cpu().view(-1,1,1,1,1) * self.a_interval # shape: nq_n,1,1,1,1
         for e in range(self.search_round):
             # search for best weight interval
             self._search_best_w_interval(x, weight_interval_candidates)
@@ -319,7 +319,7 @@ class BatchingEasyQuantConv2d(PTQSLQuantConv2d):
         tmp_a_intervals = []
         for b_st in range(0,self.calib_size,self.calib_batch_size):
             b_ed = min(self.calib_size, b_st+self.calib_batch_size)
-            x_ = self.raw_input[b_st:b_ed].cuda()
+            x_ = self.raw_input[b_st:b_ed].cpu()
             a_interval_=(x_.abs().max()/(self.a_qmax-0.5)).detach().view(1,1)
             tmp_a_intervals.append(a_interval_)
         self.a_interval = torch.cat(tmp_a_intervals, dim=1).amax(dim=1, keepdim=False)
@@ -372,9 +372,9 @@ class BatchingEasyQuantConv2d(PTQSLQuantConv2d):
         batch_similarities = []
         for b_st in range(0,self.calib_size,self.calib_batch_size):
             b_ed = min(self.calib_size, b_st+self.calib_batch_size)
-            x = self.raw_input[b_st:b_ed].cuda()
-            raw_out = self.raw_out[b_st:b_ed].cuda().unsqueeze(1) # shape: b,1,oc,fw,fh
-            raw_grad = self.raw_grad[b_st:b_ed].cuda()
+            x = self.raw_input[b_st:b_ed].cpu()
+            raw_out = self.raw_out[b_st:b_ed].cpu().unsqueeze(1) # shape: b,1,oc,fw,fh
+            raw_grad = self.raw_grad[b_st:b_ed].cpu()
             similarities = []
             for p_st in range(0, self.eq_n, self.parallel_eq_n):
                 p_ed = min(self.eq_n, p_st+self.parallel_eq_n)
@@ -406,9 +406,9 @@ class BatchingEasyQuantConv2d(PTQSLQuantConv2d):
         batch_similarities = []
         for b_st in range(0,self.calib_size,self.calib_batch_size):
             b_ed = min(self.calib_size, b_st+self.calib_batch_size)
-            x = self.raw_input[b_st:b_ed].cuda()
-            raw_out = self.raw_out[b_st:b_ed].cuda().unsqueeze(0) # shape: 1,b,oc,fw,fh
-            raw_grad = self.raw_grad[b_st:b_ed].cuda()
+            x = self.raw_input[b_st:b_ed].cpu()
+            raw_out = self.raw_out[b_st:b_ed].cpu().unsqueeze(0) # shape: 1,b,oc,fw,fh
+            raw_grad = self.raw_grad[b_st:b_ed].cpu()
             similarities = []
             for p_st in range(0,self.eq_n,self.parallel_eq_n):
                 p_ed = min(self.eq_n, p_st+self.parallel_eq_n)
@@ -437,8 +437,8 @@ class BatchingEasyQuantConv2d(PTQSLQuantConv2d):
     def calibration_step2(self):
         self._initialize_calib_parameters()
         self._initialize_intervals()
-        weight_interval_candidates = torch.tensor([self.eq_alpha + i*(self.eq_beta - self.eq_alpha)/self.eq_n for i in range(self.eq_n + 1)]).cuda().view(-1,1,1,1,1) * self.w_interval # shape: eq_n,1,1,1,1
-        input_interval_candidates =  torch.tensor([self.eq_alpha + i*(self.eq_beta - self.eq_alpha)/self.eq_n for i in range(self.eq_n + 1)]).cuda().view(-1,1,1,1,1) * self.a_interval # shape: eq_n,1,1,1,1
+        weight_interval_candidates = torch.tensor([self.eq_alpha + i*(self.eq_beta - self.eq_alpha)/self.eq_n for i in range(self.eq_n + 1)]).cpu().view(-1,1,1,1,1) * self.w_interval # shape: eq_n,1,1,1,1
+        input_interval_candidates =  torch.tensor([self.eq_alpha + i*(self.eq_beta - self.eq_alpha)/self.eq_n for i in range(self.eq_n + 1)]).cpu().view(-1,1,1,1,1) * self.a_interval # shape: eq_n,1,1,1,1
         for e in range(self.search_round):
             # search for best weight interval
             self._search_best_w_interval(weight_interval_candidates)
@@ -498,7 +498,7 @@ class ChannelwiseBatchingQuantConv2d(PTQSLQuantConv2d):
         tmp_a_intervals = []
         for b_st in range(0,self.calib_size,self.calib_batch_size):
             b_ed = min(self.calib_size, b_st+self.calib_batch_size)
-            x_ = self.raw_input[b_st:b_ed].cuda()
+            x_ = self.raw_input[b_st:b_ed].cpu()
             a_interval_=(x_.abs().max()/(self.a_qmax-0.5)).detach().view(1,1)
             tmp_a_intervals.append(a_interval_)
         self.a_interval = torch.cat(tmp_a_intervals, dim=1).amax(dim=1, keepdim=False)
@@ -535,9 +535,9 @@ class ChannelwiseBatchingQuantConv2d(PTQSLQuantConv2d):
         batch_similarities = []
         for b_st in range(0,self.calib_size,self.calib_batch_size):
             b_ed = min(self.calib_size, b_st+self.calib_batch_size)
-            x = self.raw_input[b_st:b_ed].cuda()
-            raw_out = self.raw_out[b_st:b_ed].cuda().unsqueeze(1) # shape: b,1,oc,fw,fh
-            raw_grad = self.raw_grad[b_st:b_ed].cuda()
+            x = self.raw_input[b_st:b_ed].cpu()
+            raw_out = self.raw_out[b_st:b_ed].cpu().unsqueeze(1) # shape: b,1,oc,fw,fh
+            raw_grad = self.raw_grad[b_st:b_ed].cpu()
             similarities = []
             for p_st in range(0, self.eq_n, self.parallel_eq_n):
                 p_ed = min(self.eq_n, p_st+self.parallel_eq_n)
@@ -569,9 +569,9 @@ class ChannelwiseBatchingQuantConv2d(PTQSLQuantConv2d):
         batch_similarities = []
         for b_st in range(0,self.calib_size,self.calib_batch_size):
             b_ed = min(self.calib_size, b_st+self.calib_batch_size)
-            x = self.raw_input[b_st:b_ed].cuda()
-            raw_out = self.raw_out[b_st:b_ed].cuda().unsqueeze(1) # shape: b,1,oc,fw,fh
-            raw_grad = self.raw_grad[b_st:b_ed].cuda()
+            x = self.raw_input[b_st:b_ed].cpu()
+            raw_out = self.raw_out[b_st:b_ed].cpu().unsqueeze(1) # shape: b,1,oc,fw,fh
+            raw_grad = self.raw_grad[b_st:b_ed].cpu()
             similarities = []
             for p_st in range(0,self.eq_n,self.parallel_eq_n):
                 p_ed = min(self.eq_n, p_st+self.parallel_eq_n)
@@ -601,8 +601,8 @@ class ChannelwiseBatchingQuantConv2d(PTQSLQuantConv2d):
     def calibration_step2(self):
         self._initialize_calib_parameters()
         self._initialize_intervals()
-        weight_interval_candidates = torch.tensor([self.eq_alpha + i*(self.eq_beta - self.eq_alpha)/self.eq_n for i in range(self.eq_n + 1)]).cuda().view(-1,1,1,1,1) * self.w_interval.unsqueeze(0) # shape: eq_n,oc,1,1,1
-        input_interval_candidates =  torch.tensor([self.eq_alpha + i*(self.eq_beta - self.eq_alpha)/self.eq_n for i in range(self.eq_n + 1)]).cuda().view(-1,1,1,1,1) * self.a_interval # shape: eq_n,1,1,1,1
+        weight_interval_candidates = torch.tensor([self.eq_alpha + i*(self.eq_beta - self.eq_alpha)/self.eq_n for i in range(self.eq_n + 1)]).cpu().view(-1,1,1,1,1) * self.w_interval.unsqueeze(0) # shape: eq_n,oc,1,1,1
+        input_interval_candidates =  torch.tensor([self.eq_alpha + i*(self.eq_beta - self.eq_alpha)/self.eq_n for i in range(self.eq_n + 1)]).cpu().view(-1,1,1,1,1) * self.a_interval # shape: eq_n,1,1,1,1
         for e in range(self.search_round):
             # search for best weight interval
             self._search_best_w_interval(weight_interval_candidates)

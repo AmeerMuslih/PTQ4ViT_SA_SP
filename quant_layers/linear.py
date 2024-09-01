@@ -244,8 +244,8 @@ class PTQSLQuantLinear(MinMaxQuantLinear):
         self.raw_grad = self.raw_grad.to(x.device) if self.raw_grad != None else None
 
         # prepare weight intervals and similarities
-        weight_interval_candidates = torch.tensor([self.eq_alpha + i*(self.eq_beta - self.eq_alpha)/self.eq_n for i in range(self.eq_n + 1)]).cuda().view(-1,1,1,1,1) * self.w_interval.unsqueeze(0) # shape: eq_n,n_V,1,n_H,1
-        input_interval_candidates =  torch.tensor([self.eq_alpha + i*(self.eq_beta - self.eq_alpha)/self.eq_n for i in range(self.eq_n + 1)]).cuda().view(1,1,-1) * self.a_interval.unsqueeze(-1) # shape: n_a,1,eq_n
+        weight_interval_candidates = torch.tensor([self.eq_alpha + i*(self.eq_beta - self.eq_alpha)/self.eq_n for i in range(self.eq_n + 1)]).cpu().view(-1,1,1,1,1) * self.w_interval.unsqueeze(0) # shape: eq_n,n_V,1,n_H,1
+        input_interval_candidates =  torch.tensor([self.eq_alpha + i*(self.eq_beta - self.eq_alpha)/self.eq_n for i in range(self.eq_n + 1)]).cpu().view(1,1,-1) * self.a_interval.unsqueeze(-1) # shape: n_a,1,eq_n
         for e in range(self.search_round):
             # search for best weight interval
             self._search_best_w_interval(x, weight_interval_candidates, raw_out_expanded_chunked)
@@ -331,8 +331,8 @@ class PostGeluPTQSLQuantLinear(PTQSLQuantLinear):
         self.raw_grad = self.raw_grad.to(x.device) if self.raw_grad != None else None
 
         # prepare weight intervals and similarities
-        weight_interval_candidates = torch.tensor([self.eq_alpha + i*(self.eq_beta - self.eq_alpha)/self.eq_n for i in range(self.eq_n + 1)]).cuda().view(-1,1,1,1,1) * self.w_interval.unsqueeze(0) # shape: eq_n,n_V,1,n_H,1
-        input_interval_candidates =  torch.tensor([self.eq_alpha + i*(self.eq_beta - self.eq_alpha)/self.eq_n for i in range(self.eq_n + 1)]).cuda().view(1,1,-1) * self.a_interval[0].unsqueeze(-1) # shape: n_a,1,eq_n
+        weight_interval_candidates = torch.tensor([self.eq_alpha + i*(self.eq_beta - self.eq_alpha)/self.eq_n for i in range(self.eq_n + 1)]).cpu().view(-1,1,1,1,1) * self.w_interval.unsqueeze(0) # shape: eq_n,n_V,1,n_H,1
+        input_interval_candidates =  torch.tensor([self.eq_alpha + i*(self.eq_beta - self.eq_alpha)/self.eq_n for i in range(self.eq_n + 1)]).cpu().view(1,1,-1) * self.a_interval[0].unsqueeze(-1) # shape: n_a,1,eq_n
         for e in range(self.search_round):
             # search for best weight interval
             self._search_best_w_interval(x, weight_interval_candidates, raw_out_expanded_chunked)
@@ -388,7 +388,7 @@ class PTQSLBatchingQuantLinear(PTQSLQuantLinear):
         tmp_a_intervals = []
         for b_st in range(0,self.calib_size,self.calib_batch_size):
             b_ed = min(self.calib_size, b_st+self.calib_batch_size)
-            x_ = self.raw_input[b_st:b_ed].cuda()
+            x_ = self.raw_input[b_st:b_ed].cpu()
             if self.init_layerwise:
                 a_interval_=(x_.abs().max()/(self.a_qmax-0.5)).detach().view(1,1).repeat(self.n_a,1)
             else:
@@ -458,10 +458,10 @@ class PTQSLBatchingQuantLinear(PTQSLQuantLinear):
             batch_similarities = [] # similarities, need to concatenate and calculate sum (equivalent to mean with argmax)
             for b_st in range(0, self.calib_size, self.calib_batch_size):
                 b_ed = min(self.calib_size, b_st + self.calib_batch_size)
-                x = self.raw_input[b_st:b_ed].cuda()
-                raw_out_expanded = self.raw_out[b_st:b_ed].cuda().unsqueeze(-2) # shape: b,*,1,oc
+                x = self.raw_input[b_st:b_ed].cpu()
+                raw_out_expanded = self.raw_out[b_st:b_ed].cpu().unsqueeze(-2) # shape: b,*,1,oc
                 raw_out_expanded = torch.cat(torch.chunk(raw_out_expanded.unsqueeze(-2), chunks=self.n_V, dim=-1), dim=-2) # shape: b,*,1,n_V,crb_rows
-                raw_grad = self.raw_grad[b_st:b_ed].cuda() # will be reshaped later
+                raw_grad = self.raw_grad[b_st:b_ed].cpu() # will be reshaped later
                 similarities = []
                 for p_st in range(0,self.eq_n,self.parallel_eq_n):
                     p_ed = min(self.eq_n, p_st+self.parallel_eq_n)
@@ -500,9 +500,9 @@ class PTQSLBatchingQuantLinear(PTQSLQuantLinear):
             batch_similarities = [] # similarities, need to concatenate and calculate sum (equivalent to mean with argmax)
             for b_st in range(0, self.calib_size, self.calib_batch_size):
                 b_ed = min(self.calib_size, b_st + self.calib_batch_size)
-                x = self.raw_input[b_st:b_ed].cuda()
-                raw_out_expanded = self.raw_out[b_st:b_ed].cuda().unsqueeze(-2) # shape: b,*,1,oc
-                raw_grad = self.raw_grad[b_st:b_ed].cuda() # will be reshaped later
+                x = self.raw_input[b_st:b_ed].cpu()
+                raw_out_expanded = self.raw_out[b_st:b_ed].cpu().unsqueeze(-2) # shape: b,*,1,oc
+                raw_grad = self.raw_grad[b_st:b_ed].cpu() # will be reshaped later
                 similarities = []
                 for p_st in range(0,self.eq_n,self.parallel_eq_n):
                     p_ed = min(self.eq_n, p_st+self.parallel_eq_n)
@@ -541,8 +541,8 @@ class PTQSLBatchingQuantLinear(PTQSLQuantLinear):
         self._initialize_intervals()
 
         # prepare weight intervals and similarities
-        weight_interval_candidates = torch.tensor([self.eq_alpha + i*(self.eq_beta - self.eq_alpha)/self.eq_n for i in range(self.eq_n + 1)]).cuda().view(-1,1,1,1,1) * self.w_interval.unsqueeze(0) # shape: eq_n,n_V,1,n_H,1
-        input_interval_candidates =  torch.tensor([self.eq_alpha + i*(self.eq_beta - self.eq_alpha)/self.eq_n for i in range(self.eq_n + 1)]).cuda().view(1,1,-1) * self.a_interval.unsqueeze(-1) # shape: n_a,1,eq_n
+        weight_interval_candidates = torch.tensor([self.eq_alpha + i*(self.eq_beta - self.eq_alpha)/self.eq_n for i in range(self.eq_n + 1)]).cpu().view(-1,1,1,1,1) * self.w_interval.unsqueeze(0) # shape: eq_n,n_V,1,n_H,1
+        input_interval_candidates =  torch.tensor([self.eq_alpha + i*(self.eq_beta - self.eq_alpha)/self.eq_n for i in range(self.eq_n + 1)]).cpu().view(1,1,-1) * self.a_interval.unsqueeze(-1) # shape: n_a,1,eq_n
         for e in range(self.search_round):
             # search for best weight interval
             self._search_best_w_interval(weight_interval_candidates)
@@ -550,7 +550,7 @@ class PTQSLBatchingQuantLinear(PTQSLQuantLinear):
             self._search_best_a_interval(input_interval_candidates)
 
         self.calibrated = True
-        # self._bias_correction_quant_forward(self.raw_input.cuda()) # debugging
+        # self._bias_correction_quant_forward(self.raw_input.cpu()) # debugging
         del self.raw_input, self.raw_out, self.raw_grad
         return None
 
@@ -585,7 +585,7 @@ class PostGeluPTQSLBatchingQuantLinear(PTQSLBatchingQuantLinear):
             tmp_a_intervals = []
             for b_st in range(0,self.calib_size,self.calib_batch_size):
                 b_ed = min(self.calib_size, b_st+self.calib_batch_size)
-                x_ = self.raw_input[b_st:b_ed].cuda()
+                x_ = self.raw_input[b_st:b_ed].cpu()
                 a_interval_=(x_.max()/(self.a_qmax-0.5)).detach().view(1,1).repeat(self.n_a,1)
                 tmp_a_intervals.append(a_interval_)
             self.a_interval = torch.cat(tmp_a_intervals, dim=1).amax(dim=1, keepdim=True)
@@ -593,7 +593,7 @@ class PostGeluPTQSLBatchingQuantLinear(PTQSLBatchingQuantLinear):
             tmp_a_intervals = []
             for b_st in range(0,self.calib_size,self.calib_batch_size):
                 b_ed = min(self.calib_size, b_st+self.calib_batch_size)
-                x_ = self.raw_input[b_st:b_ed].cuda()
+                x_ = self.raw_input[b_st:b_ed].cpu()
                 a_interval_=((x_.view(*x_.shape[:-1],self.n_a,self.crb_acts).amax(list(range(len(x_.shape)-1))+[-1],keepdim=False))/(self.a_qmax-0.5)).unsqueeze(-1)
                 tmp_a_intervals.append(a_interval_)
             self.a_interval = torch.cat(tmp_a_intervals, dim=1).amax(dim=1, keepdim=True)
@@ -612,9 +612,9 @@ class PostGeluPTQSLBatchingQuantLinear(PTQSLBatchingQuantLinear):
             batch_similarities = [] # similarities, need to concatenate and calculate sum (equivalent to mean with argmax)
             for b_st in range(0, self.calib_size, self.calib_batch_size):
                 b_ed = min(self.calib_size, b_st + self.calib_batch_size)
-                x = self.raw_input[b_st:b_ed].cuda()
-                raw_out_expanded = self.raw_out[b_st:b_ed].cuda().unsqueeze(-2) # shape: b,*,1,oc
-                raw_grad = self.raw_grad[b_st:b_ed].cuda() # will be reshaped later
+                x = self.raw_input[b_st:b_ed].cpu()
+                raw_out_expanded = self.raw_out[b_st:b_ed].cpu().unsqueeze(-2) # shape: b,*,1,oc
+                raw_grad = self.raw_grad[b_st:b_ed].cpu() # will be reshaped later
                 similarities = []
                 for p_st in range(0,self.eq_n,self.parallel_eq_n):
                     p_ed = min(self.eq_n, p_st+self.parallel_eq_n)

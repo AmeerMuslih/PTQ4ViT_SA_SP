@@ -46,7 +46,7 @@ class MinMaxQuantMatMul(nn.Module):
                 #result[i, j] = A[i, j] @ B[i, j]
                 print("Iteration ", i*Y+j)
                 result[i, j] = matmul_sa(A[i, j], B[i, j])
-        return result.to('cuda')
+        return result.to('cpu')
 
     def quant_input(self,x,interval,qmax):
         x_sim=(x/interval).round_().clamp_(-qmax,qmax-1)
@@ -285,8 +285,8 @@ class PTQSLQuantMatMul(MinMaxQuantMatMul):
         self._initialize_intervals(A, B)
 
         # prepare weight intervals and similarities
-        A_interval_candidates = torch.tensor([self.eq_alpha + i*(self.eq_beta - self.eq_alpha)/self.eq_n for i in range(self.eq_n + 1)]).cuda().view(-1,1,1,1,1,1,1,1) * self.A_interval.unsqueeze(0)
-        B_interval_candidates = torch.tensor([self.eq_alpha + i*(self.eq_beta - self.eq_alpha)/self.eq_n for i in range(self.eq_n + 1)]).cuda().view(-1,1,1,1,1,1,1,1) * self.B_interval.unsqueeze(0)
+        A_interval_candidates = torch.tensor([self.eq_alpha + i*(self.eq_beta - self.eq_alpha)/self.eq_n for i in range(self.eq_n + 1)]).cpu().view(-1,1,1,1,1,1,1,1) * self.A_interval.unsqueeze(0)
+        B_interval_candidates = torch.tensor([self.eq_alpha + i*(self.eq_beta - self.eq_alpha)/self.eq_n for i in range(self.eq_n + 1)]).cpu().view(-1,1,1,1,1,1,1,1) * self.B_interval.unsqueeze(0)
 
         for e in range(self.search_round):
             # search for best A interval
@@ -390,10 +390,10 @@ class SoSPTQSLQuantMatMul(PTQSLQuantMatMul):
         self._initialize_intervals(A, B)
 
         # prepare weight intervals and similarities
-        A_split_candidates = torch.tensor([2**(-i) for i in range(20)]).cuda()
+        A_split_candidates = torch.tensor([2**(-i) for i in range(20)]).cpu()
         # split_eq_alpha, split_eq_beta, split_eq_n = 0.002, 0.03, 50
-        # A_split_candidates = torch.tensor([split_eq_alpha + (split_eq_beta- split_eq_alpha)*i/split_eq_n for i in range(split_eq_n + 1)]).cuda()
-        B_interval_candidates = torch.tensor([self.eq_alpha + i*(self.eq_beta - self.eq_alpha)/self.eq_n for i in range(self.eq_n + 1)]).cuda().view(-1,1,1,1,1,1,1,1) * self.B_interval.unsqueeze(0)
+        # A_split_candidates = torch.tensor([split_eq_alpha + (split_eq_beta- split_eq_alpha)*i/split_eq_n for i in range(split_eq_n + 1)]).cpu()
+        B_interval_candidates = torch.tensor([self.eq_alpha + i*(self.eq_beta - self.eq_alpha)/self.eq_n for i in range(self.eq_n + 1)]).cpu().view(-1,1,1,1,1,1,1,1) * self.B_interval.unsqueeze(0)
 
         for e in range(self.search_round):
             # search for best A interval
@@ -449,7 +449,7 @@ class PTQSLBatchingQuantMatMul(PTQSLQuantMatMul):
         tmp_B_intervals = []
         for b_st in range(0,self.calib_size,self.calib_batch_size):
             b_ed = min(self.calib_size, b_st+self.calib_batch_size)
-            A, B = self.raw_input[0][b_st:b_ed].cuda(), self.raw_input[1][b_st:b_ed].cuda()
+            A, B = self.raw_input[0][b_st:b_ed].cpu(), self.raw_input[1][b_st:b_ed].cpu()
             if self.init_layerwise:
                 A_interval = (A.abs().max()/(self.A_qmax-0.5)).detach().view(1,1,1,1,1,1,1).repeat(1,self.n_G_A,1,self.n_V_A,1,self.n_H_A,1)
                 B_interval = (B.abs().max()/(self.B_qmax-0.5)).detach().view(1,1,1,1,1,1,1).repeat(1,self.n_G_B,1,self.n_V_B,1,self.n_H_B,1)
@@ -514,12 +514,12 @@ class PTQSLBatchingQuantMatMul(PTQSLQuantMatMul):
             batch_similarities = [] # similarities, need to concatenate and calculate sum
             for b_st in range(0, self.calib_size, self.calib_batch_size):
                 b_ed = min(self.calib_size, b_st + self.calib_batch_size)
-                A = self.raw_input[0][b_st:b_ed].cuda()
+                A = self.raw_input[0][b_st:b_ed].cpu()
                 A_pad = F.pad(A, [0,self.pad_cols_A,0,self.pad_rows_A,0,self.pad_groups_A]).unsqueeze(0).view(1,-1,self.n_G_A,self.crb_groups_A,self.n_V_A,self.crb_rows_A,self.n_H_A,self.crb_cols_A)
-                B = self.raw_input[1][b_st:b_ed].cuda()
+                B = self.raw_input[1][b_st:b_ed].cpu()
                 B_sim = self.quant_input_B(B).unsqueeze(0) # shape: 1,b,H,dim2,dim3
-                raw_out = self.raw_out[b_st:b_ed].unsqueeze(0).cuda()
-                raw_grad = self.raw_grad[b_st:b_ed].cuda()
+                raw_out = self.raw_out[b_st:b_ed].unsqueeze(0).cpu()
+                raw_grad = self.raw_grad[b_st:b_ed].cpu()
                 similarities = []
                 for p_st in range(0, self.eq_n, self.parallel_eq_n):
                     p_ed = min(self.eq_n,p_st+self.parallel_eq_n)
@@ -556,12 +556,12 @@ class PTQSLBatchingQuantMatMul(PTQSLQuantMatMul):
             batch_similarities = [] # similarities, need to concatenate and calculate sum
             for b_st in range(0, self.calib_size, self.calib_batch_size):
                 b_ed = min(self.calib_size, b_st + self.calib_batch_size)
-                A = self.raw_input[0][b_st:b_ed].cuda()
+                A = self.raw_input[0][b_st:b_ed].cpu()
                 A_sim = self.quant_input_A(A).unsqueeze(0) # shape: 1,B,H,dim1,dim2
-                B = self.raw_input[1][b_st:b_ed].cuda()
+                B = self.raw_input[1][b_st:b_ed].cpu()
                 B_pad = F.pad(B, [0,self.pad_cols_B,0,self.pad_rows_B,0,self.pad_groups_B]).unsqueeze(0).view(1,-1,self.n_G_B,self.crb_groups_B,self.n_V_B,self.crb_rows_B,self.n_H_B,self.crb_cols_B)
-                raw_out = self.raw_out[b_st:b_ed].unsqueeze(0).cuda()
-                raw_grad = self.raw_grad[b_st:b_ed].cuda()
+                raw_out = self.raw_out[b_st:b_ed].unsqueeze(0).cpu()
+                raw_grad = self.raw_grad[b_st:b_ed].cpu()
                 similarities = []
                 for p_st in range(0, self.eq_n, self.parallel_eq_n):
                     p_ed = min(self.eq_n,p_st+self.parallel_eq_n)
@@ -591,8 +591,8 @@ class PTQSLBatchingQuantMatMul(PTQSLQuantMatMul):
     def calibration_step2(self):
         self._initialize_calib_parameters()
         self._initialize_intervals()
-        A_interval_candidates = torch.tensor([self.eq_alpha + i*(self.eq_beta - self.eq_alpha)/self.eq_n for i in range(self.eq_n + 1)]).cuda().view(-1,1,1,1,1,1,1,1) * self.A_interval.unsqueeze(0)
-        B_interval_candidates = torch.tensor([self.eq_alpha + i*(self.eq_beta - self.eq_alpha)/self.eq_n for i in range(self.eq_n + 1)]).cuda().view(-1,1,1,1,1,1,1,1) * self.B_interval.unsqueeze(0)
+        A_interval_candidates = torch.tensor([self.eq_alpha + i*(self.eq_beta - self.eq_alpha)/self.eq_n for i in range(self.eq_n + 1)]).cpu().view(-1,1,1,1,1,1,1,1) * self.A_interval.unsqueeze(0)
+        B_interval_candidates = torch.tensor([self.eq_alpha + i*(self.eq_beta - self.eq_alpha)/self.eq_n for i in range(self.eq_n + 1)]).cpu().view(-1,1,1,1,1,1,1,1) * self.B_interval.unsqueeze(0)
         for e in range(self.search_round):
             # search for best A interval
             self._search_best_A_interval(A_interval_candidates)
@@ -627,11 +627,11 @@ class SoSPTQSLBatchingQuantMatMul(PTQSLBatchingQuantMatMul):
         batch_similarities = []
         for b_st in range(0, self.calib_size, self.calib_batch_size):
             b_ed = min(self.calib_size, b_st + self.calib_batch_size)
-            A = self.raw_input[0][b_st:b_ed].unsqueeze(0).cuda()
-            B = self.raw_input[1][b_st:b_ed].unsqueeze(0).cuda()
+            A = self.raw_input[0][b_st:b_ed].unsqueeze(0).cpu()
+            B = self.raw_input[1][b_st:b_ed].unsqueeze(0).cpu()
             B_sim = B
-            raw_out = self.raw_out[b_st:b_ed].unsqueeze(0).cuda()
-            raw_grad = self.raw_grad[b_st:b_ed].cuda()
+            raw_out = self.raw_out[b_st:b_ed].unsqueeze(0).cpu()
+            raw_grad = self.raw_grad[b_st:b_ed].cpu()
             similarities = []
             for i in range(len(split_candidates)):
                 # quantize A
@@ -660,8 +660,8 @@ class SoSPTQSLBatchingQuantMatMul(PTQSLBatchingQuantMatMul):
     def calibration_step2(self):
         self._initialize_calib_parameters()
         self._initialize_intervals()
-        A_split_candidates = torch.tensor([2**(-i) for i in range(20)]).cuda()
-        B_interval_candidates = torch.tensor([self.eq_alpha + i*(self.eq_beta - self.eq_alpha)/self.eq_n for i in range(self.eq_n + 1)]).cuda().view(-1,1,1,1,1,1,1,1) * self.B_interval.unsqueeze(0)
+        A_split_candidates = torch.tensor([2**(-i) for i in range(20)]).cpu()
+        B_interval_candidates = torch.tensor([self.eq_alpha + i*(self.eq_beta - self.eq_alpha)/self.eq_n for i in range(self.eq_n + 1)]).cpu().view(-1,1,1,1,1,1,1,1) * self.B_interval.unsqueeze(0)
         for e in range(self.search_round):
             # search for best A interval
             self._search_best_A_interval(A_split_candidates)

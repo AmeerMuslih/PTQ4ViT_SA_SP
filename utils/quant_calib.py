@@ -45,13 +45,13 @@ class QuantCalibrator():
                     module.mode=f'calibration_step{step+1}'
             with torch.no_grad():
                 for inp,target in self.calib_loader:
-                    inp=inp.cuda()
+                    inp=inp.cpu()
                     self.net(inp)
         
         # finish calibration
         for name,module in self.wrapped_modules.items():
             module.mode='quant_forward'
-        torch.cuda.empty_cache() # memory footprint cleanup
+        torch.cpu.empty_cache() # memory footprint cleanup
         print("sequential calibration finished")
     
     def parallel_quant_calib(self):
@@ -69,7 +69,7 @@ class QuantCalibrator():
                 module.mode=f'calibration_step1'
         with torch.no_grad():
             for inp,target in self.calib_loader:
-                inp=inp.cuda()
+                inp=inp.cpu()
                 self.net(inp)
         # calibration step2: each module run calibration with collected raw data
         for name,module in self.wrapped_modules.items():
@@ -79,17 +79,17 @@ class QuantCalibrator():
                 module.mode=f"calibration_step2"
                 with torch.no_grad():
                     if isinstance(module, MinMaxQuantLinear):
-                        module.forward(module.raw_input.cuda())
+                        module.forward(module.raw_input.cpu())
                     elif isinstance(module, MinMaxQuantConv2d):
-                        module.forward(module.raw_input.cuda())
+                        module.forward(module.raw_input.cpu())
                     elif isinstance(module, MinMaxQuantMatMul):
-                        module.forward(module.raw_input[0].cuda(), module.raw_input[1].cuda())
-                    torch.cuda.empty_cache()
+                        module.forward(module.raw_input[0].cpu(), module.raw_input[1].cpu())
+                    torch.cpu.empty_cache()
                 
         # finish calibration
         for name,module in self.wrapped_modules.items():
             module.mode='quant_forward'
-        torch.cuda.empty_cache() # memory footprint cleanup
+        torch.cpu.empty_cache() # memory footprint cleanup
         print("calibration finished")
     
     def quant_calib(self):
@@ -130,10 +130,10 @@ class QuantCalibrator():
             for inp, target in self.calib_loader:
                 for batch_st in range(0,self.calib_loader.batch_size,self.batch_size):
                     self.net.zero_grad()
-                    inp_ = inp[batch_st:batch_st+self.batch_size].cuda()
+                    inp_ = inp[batch_st:batch_st+self.batch_size].cpu()
                     self.net(inp_)
                 del inp, target
-                torch.cuda.empty_cache()
+                torch.cpu.empty_cache()
             
             # replace cached raw_inputs, raw_outs
             if isinstance(module, MinMaxQuantLinear):
@@ -156,7 +156,7 @@ class QuantCalibrator():
                     module.calibration_step2()
                 if isinstance(module, MinMaxQuantMatMul):
                     module.calibration_step2()
-                torch.cuda.empty_cache()
+                torch.cpu.empty_cache()
             
             # finishing up current module calibration
             if self.sequential:
@@ -228,9 +228,9 @@ class HessianQuantCalibrator(QuantCalibrator):
         # get raw_pred as target distribution 
         with torch.no_grad():
             for inp, _ in self.calib_loader:
-                raw_pred = self.net(inp.cuda())
+                raw_pred = self.net(inp.cpu())
                 raw_pred_softmax = F.softmax(raw_pred, dim=-1).detach()
-            torch.cuda.empty_cache()
+            torch.cpu.empty_cache()
 
         # assume wrapped modules are in order (true for dict in python>=3.5)
         q = tqdm(self.wrapped_modules.items(), desc="Brecq")
@@ -253,12 +253,12 @@ class HessianQuantCalibrator(QuantCalibrator):
             for inp, target in self.calib_loader:
                 for batch_st in range(0,self.calib_loader.batch_size,self.batch_size):
                     self.net.zero_grad()
-                    inp_ = inp[batch_st:batch_st+self.batch_size].cuda()
+                    inp_ = inp[batch_st:batch_st+self.batch_size].cpu()
                     pred = self.net(inp_)
                     loss = F.kl_div(F.log_softmax(pred, dim=-1), raw_pred_softmax[batch_st:batch_st+self.batch_size], reduction="batchmean")
                     loss.backward()
                 del inp, target, pred, loss
-                torch.cuda.empty_cache()
+                torch.cpu.empty_cache()
             
             # replace cached raw_inputs, raw_outs
             if isinstance(module, MinMaxQuantLinear):
@@ -278,12 +278,12 @@ class HessianQuantCalibrator(QuantCalibrator):
             # run calibration step2
             with torch.no_grad():
                 if isinstance(module, MinMaxQuantLinear):
-                    module.calibration_step2(module.raw_input.cuda())
+                    module.calibration_step2(module.raw_input.cpu())
                 if isinstance(module, MinMaxQuantConv2d):
-                    module.calibration_step2(module.raw_input.cuda())
+                    module.calibration_step2(module.raw_input.cpu())
                 if isinstance(module, MinMaxQuantMatMul):
-                    module.calibration_step2(module.raw_input[0].cuda(), module.raw_input[1].cuda())
-                torch.cuda.empty_cache()
+                    module.calibration_step2(module.raw_input[0].cpu(), module.raw_input[1].cpu())
+                torch.cpu.empty_cache()
             
             # finishing up current module calibration
             if self.sequential:
@@ -308,9 +308,9 @@ class HessianQuantCalibrator(QuantCalibrator):
         # get raw_pred as target distribution 
         with torch.no_grad():
             for inp, _ in self.calib_loader:
-                raw_pred = self.net(inp.cuda())
+                raw_pred = self.net(inp.cpu())
                 raw_pred_softmax = F.softmax(raw_pred, dim=-1).detach()
-            torch.cuda.empty_cache()
+            torch.cpu.empty_cache()
 
         # assume wrapped modules are in order (true for dict in python>=3.5)
         q = tqdm(self.wrapped_modules.items(), desc="Hessian")
@@ -333,12 +333,12 @@ class HessianQuantCalibrator(QuantCalibrator):
             for inp, target in self.calib_loader:
                 for batch_st in range(0,self.calib_loader.batch_size,self.batch_size):
                     self.net.zero_grad()
-                    inp_ = inp[batch_st:batch_st+self.batch_size].cuda()
+                    inp_ = inp[batch_st:batch_st+self.batch_size].cpu()
                     pred = self.net(inp_)
                     loss = F.kl_div(F.log_softmax(pred, dim=-1), raw_pred_softmax[batch_st:batch_st+self.batch_size], reduction="batchmean")
                     loss.backward()
                 del inp, target, pred, loss
-                torch.cuda.empty_cache()
+                torch.cpu.empty_cache()
             
             # replace cached raw_inputs, raw_outs
             if isinstance(module, MinMaxQuantLinear):
@@ -363,7 +363,7 @@ class HessianQuantCalibrator(QuantCalibrator):
                     module.calibration_step2()
                 if isinstance(module, MinMaxQuantMatMul):
                     module.calibration_step2()
-                torch.cuda.empty_cache()
+                torch.cpu.empty_cache()
             
             # finishing up current module calibration
             if self.sequential:
