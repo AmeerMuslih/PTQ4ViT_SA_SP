@@ -80,7 +80,7 @@ if __name__=='__main__':
     
     weights_path = f"./weights/{name}.pth"
     if os.path.exists(weights_path):
-        weights = torch.load(weights_path)
+        weights = torch.load(weights_path, map_location=torch.device('cpu'))
         set_model_weight(wrapped_modules, weights)
         print("weights loaded")
     else:
