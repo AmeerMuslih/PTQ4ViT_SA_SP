@@ -60,7 +60,7 @@ class MinMaxQuantMatMul(nn.Module):
         #print("mul 2")
         out=A_sim@B_sim
         #out = self.SA_mul(A_sim, B_sim)
-        #out.mul_(self.A_interval).mul_(self.B_interval)
+        out.mul_(self.A_interval).mul_(self.B_interval)
         return out
 
     def calibration_step1(self,A,B):
