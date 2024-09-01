@@ -58,7 +58,7 @@ def matmul_sa(tensor_a, tensor_b):
 	}
 
 	# Save checkpoint to file
-	checkpoint_file = f'/home/firasramadan/PTQ4ViT_Firas/OutputFiles/image_{start_idx}_results.txt'
+	checkpoint_file = f'/home/a.mosa/Ameer/PTQ4ViT_Firas/OutputFiles/image_{start_idx}_results.txt'
 	with open(checkpoint_file, 'w') as f:
 		f.write(str(checkpoint))
 
