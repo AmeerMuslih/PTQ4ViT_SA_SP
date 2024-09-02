@@ -10,8 +10,8 @@ def csvFilesMaker(all_util, Accumulator_TOT, InputA_TOT, InputB_TOT, totalCycles
 		InputB_TOT = InputB_TOT/totalCycles
 
 		filenamek_csv = "UtilityFor"+str(dim)+"X"+str(dim)+"Dim.csv"
-		Destination_path = "/home/firasramadan/PTQ4ViT_SA_SP/OutputFiles/SP/"
-		os.makedirs('/home/firasramadan/PTQ4ViT_SA_SP/OutputFiles/SP', exist_ok=True)
+		Destination_path = "/home/a.mosa/Ameer/PTQ4ViT_Firas/OutputFiles/SP/" #"/home/firasramadan/PTQ4ViT_SA_SP/OutputFiles/SP/"
+		os.makedirs('/home/a.mosa/Ameer/PTQ4ViT_Firas/OutputFiles/SP', exist_ok=True)
 		all_util_df = pd.DataFrame(all_util[:,:,0].numpy())
 		all_util_df.to_csv(Destination_path + filenamek_csv,header = False, index = False)
     
