@@ -47,11 +47,11 @@ def matmul_sa(tensor_a, tensor_b):
 	InputA_TOT += Input_A_BitsCount
 	InputB_TOT += Input_B_BitsCount
 
-	os.makedirs('/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{start_idx}', exist_ok=True)
-	torch.save(all_util, '/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{start_idx}/all_util.pt')
-	torch.save(Accumulator_TOT, '/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{start_idx}/Accumulator_TOT.pt')
-	torch.save(InputA_TOT, '/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{start_idx}/InputA_TOT.pt')
-	torch.save(InputB_TOT, '/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{start_idx}/InputB_TOT.pt')
+	os.makedirs(f'/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{start_idx}', exist_ok=True)
+	torch.save(all_util, f'/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{start_idx}/all_util.pt')
+	torch.save(Accumulator_TOT, f'/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{start_idx}/Accumulator_TOT.pt')
+	torch.save(InputA_TOT, f'/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{start_idx}/InputA_TOT.pt')
+	torch.save(InputB_TOT, f'/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{start_idx}/InputB_TOT.pt')
 	# os.makedirs(f'/home/a.mosa/Ameer/PTQ4ViT_Firas/OutputFiles/Group_{start_idx}', exist_ok=True)
 	# torch.save(all_util, f'/home/a.mosa/Ameer/PTQ4ViT_Firas/OutputFiles/Group_{start_idx}/all_util.pt')
 	# torch.save(Accumulator_TOT, f'/home/a.mosa/Ameer/PTQ4ViT_Firas/OutputFiles/Group_{start_idx}/Accumulator_TOT.pt')
