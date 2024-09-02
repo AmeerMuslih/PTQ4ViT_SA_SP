@@ -65,7 +65,7 @@ def main():
 	InputB_TOT = torch.zeros(dim,dim,8)
 	totalCycles = 5382144
 
-	for i in range(1):
+	for i in range(100):
 		# Specify the file path of the checkpoint
 		all_util_file = f'/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{i*2}/all_util.pt'
 		Accumulator_TOT_file = f'/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{i*2}/Accumulator_TOT.pt'
