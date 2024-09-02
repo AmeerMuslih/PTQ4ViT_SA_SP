@@ -10,9 +10,9 @@ def csvFilesMaker(all_util, Accumulator_TOT, InputA_TOT, InputB_TOT, totalCycles
 		InputB_TOT = InputB_TOT/totalCycles
 
 		filenamek_csv = "UtilityFor"+str(dim)+"X"+str(dim)+"Dim.csv"
-		Destination_path = "/home/a.mosa/Ameer/PTQ4ViT_Firas/OutputFiles/SP/" #"/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/SP/"
-		#os.makedirs('/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/SP', exist_ok=True)
-		os.makedirs('/home/a.mosa/Ameer/PTQ4ViT_Firas/OutputFiles/SP', exist_ok=True)
+		Destination_path = "/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/SP/" #"/home/a.mosa/Ameer/PTQ4ViT_Firas/OutputFiles/SP/"
+		os.makedirs('/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/SP', exist_ok=True)
+		#os.makedirs('/home/a.mosa/Ameer/PTQ4ViT_Firas/OutputFiles/SP', exist_ok=True)
 		all_util_df = pd.DataFrame(all_util[:,:,0].numpy())
 		all_util_df.to_csv(Destination_path + filenamek_csv,header = False, index = False)
     
@@ -67,14 +67,14 @@ def main():
 
 	for i in range(1):
 		# Specify the file path of the checkpoint
-		#all_util_file = f'/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{i*2}/all_util.pt'
-		#Accumulator_TOT_file = f'/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{i*2}/Accumulator_TOT.pt'
-		#InputA_TOT_file = f'/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{i*2}/InputA_TOT.pt'
-		#InputB_TOT_file = f'/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{i*2}/InputB_TOT.pt'
-		all_util_file = f'/home/a.mosa/Ameer/PTQ4ViT_Firas/OutputFiles/Group_{i*2}/all_util.pt'
-		Accumulator_TOT_file = f'/home/a.mosa/Ameer/PTQ4ViT_Firas/OutputFiles/Group_{i*2}/Accumulator_TOT.pt'
-		InputA_TOT_file = f'/home/a.mosa/Ameer/PTQ4ViT_Firas/OutputFiles/Group_{i*2}/InputA_TOT.pt'
-		InputB_TOT_file = f'/home/a.mosa/Ameer/PTQ4ViT_Firas/OutputFiles/Group_{i*2}/InputB_TOT.pt'
+		all_util_file = f'/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{i*2}/all_util.pt'
+		Accumulator_TOT_file = f'/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{i*2}/Accumulator_TOT.pt'
+		InputA_TOT_file = f'/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{i*2}/InputA_TOT.pt'
+		InputB_TOT_file = f'/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{i*2}/InputB_TOT.pt'
+		# all_util_file = f'/home/a.mosa/Ameer/PTQ4ViT_Firas/OutputFiles/Group_{i*2}/all_util.pt'
+		# Accumulator_TOT_file = f'/home/a.mosa/Ameer/PTQ4ViT_Firas/OutputFiles/Group_{i*2}/Accumulator_TOT.pt'
+		# InputA_TOT_file = f'/home/a.mosa/Ameer/PTQ4ViT_Firas/OutputFiles/Group_{i*2}/InputA_TOT.pt'
+		# InputB_TOT_file = f'/home/a.mosa/Ameer/PTQ4ViT_Firas/OutputFiles/Group_{i*2}/InputB_TOT.pt'
 
     	# Load the tensors from the checkpoint
 		all_util += torch.load(all_util_file)
