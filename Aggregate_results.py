@@ -63,7 +63,7 @@ def main():
     totalCycles=0
     for i in range(50):
         # Specify the file path of the checkpoint
-        checkpoint_file = f'/home/<user>/PTQ4ViT_SA_SP/OutputFiles/image_{i}_results.txt'
+        all_util_file = f'/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{i*2}/all_util.pt'
 
         # Load the checkpoint
         checkpoint = load_checkpoint(checkpoint_file)

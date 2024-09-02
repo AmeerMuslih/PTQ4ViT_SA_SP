@@ -1,5 +1,6 @@
 #packages that need to be install: torch, torchVision, timm, 
 from torch.nn.modules import module
+from Matmul_SA import save_results
 from ameer_example.test_vit import *
 from quant_layers.conv import MinMaxQuantConv2d
 from quant_layers.linear import MinMaxQuantLinear, PTQSLQuantLinear
@@ -60,7 +61,7 @@ if __name__=='__main__':
     cfg = cfg_modifier(linear_ptq_setting=(1,1,1), metric="hessian", bit_setting=(8,8))
     #os.chdir('.') #/raid/ori.sch/PTQ4ViT
     #RUN_ITER = 300
-    IMG_PATH = 'home/firasramadan/Firas/Imagenet'
+    IMG_PATH = '/home/firasramadan/Firas/Imagenet'
     start_idx = int(sys.argv[1])
     assert start_idx >= 0 and start_idx < 1000
     print(f"Firstly Classifying image: {start_idx}")
@@ -99,7 +100,7 @@ if __name__=='__main__':
     acc_end_time = time.time()
     print(f"original accuracy: {acc}")
     print(f"original run time: {(acc_end_time-acc_start_time)/60}min")
-    
+    save_results()
     # for j in range(6):
     #     model = copy.deepcopy(net)
     #     for i in range(12):

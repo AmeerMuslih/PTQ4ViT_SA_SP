@@ -21,6 +21,17 @@ InputA_TOT = torch.zeros(dim,dim,8)
 InputB_TOT = torch.zeros(dim,dim,8)
 		
 
+def save_results():
+	global all_util
+	global Accumulator_TOT
+	global InputA_TOT
+	global InputB_TOT
+	start_idx = None
+	if 'start_idx' in os.environ:
+		start_idx = int(os.environ['start_idx'])
+	assert start_idx >= 0 and start_idx < 1000
+	
+
 def percentage_of_zeros(tensor):
     total_elements = tensor.numel()  # Total number of elements in the tensor
     zero_elements = torch.sum(tensor == 0).item()  # Number of zeros in the tensor
@@ -36,7 +47,6 @@ def matmul_sa(tensor_a, tensor_b):
 	global Accumulator_TOT
 	global InputA_TOT
 	global InputB_TOT
-	global totalCycles
 
 	a = tensor_a
 	b = tensor_b
@@ -47,18 +57,12 @@ def matmul_sa(tensor_a, tensor_b):
 	Accumulator_TOT += AccumulatorBitsCount
 	InputA_TOT += Input_A_BitsCount
 	InputB_TOT += Input_B_BitsCount
-	checkpoint = {
-		'all_util': all_util,
-		'Accumulator_TOT': Accumulator_TOT,
-		'InputA_TOT': InputA_TOT,
-		'InputB_TOT': InputB_TOT,
-	}
 
-	# Save checkpoint to file
-	checkpoint_file = f'/home/a.mosa/Ameer/PTQ4ViT_Firas/OutputFiles/image_{start_idx}_results.csv'
-	with open(checkpoint_file, 'w') as f:
-		f.write(str(checkpoint))
-
+	os.makedirs('/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{start_idx}', exist_ok=True)
+	torch.save(all_util, '/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{start_idx}/all_util.pt')
+	torch.save(Accumulator_TOT, '/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{start_idx}/Accumulator_TOT.pt')
+	torch.save(InputA_TOT, '/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{start_idx}/InputA_TOT.pt')
+	torch.save(InputB_TOT, '/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{start_idx}/InputB_TOT.pt')
 	#print("Cycles = ", cycles)
 	#print(dut.shape)
 	return dut
