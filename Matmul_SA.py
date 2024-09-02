@@ -19,17 +19,6 @@ all_util = torch.zeros(dim,dim,17)
 Accumulator_TOT = torch.zeros(dim,dim,32)
 InputA_TOT = torch.zeros(dim,dim,8)
 InputB_TOT = torch.zeros(dim,dim,8)
-		
-
-def save_results():
-	global all_util
-	global Accumulator_TOT
-	global InputA_TOT
-	global InputB_TOT
-	start_idx = None
-	if 'start_idx' in os.environ:
-		start_idx = int(os.environ['start_idx'])
-	assert start_idx >= 0 and start_idx < 1000
 	
 
 def percentage_of_zeros(tensor):
@@ -58,11 +47,16 @@ def matmul_sa(tensor_a, tensor_b):
 	InputA_TOT += Input_A_BitsCount
 	InputB_TOT += Input_B_BitsCount
 
-	os.makedirs('/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{start_idx}', exist_ok=True)
-	torch.save(all_util, '/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{start_idx}/all_util.pt')
-	torch.save(Accumulator_TOT, '/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{start_idx}/Accumulator_TOT.pt')
-	torch.save(InputA_TOT, '/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{start_idx}/InputA_TOT.pt')
-	torch.save(InputB_TOT, '/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{start_idx}/InputB_TOT.pt')
+	# os.makedirs('/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{start_idx}', exist_ok=True)
+	# torch.save(all_util, '/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{start_idx}/all_util.pt')
+	# torch.save(Accumulator_TOT, '/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{start_idx}/Accumulator_TOT.pt')
+	# torch.save(InputA_TOT, '/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{start_idx}/InputA_TOT.pt')
+	# torch.save(InputB_TOT, '/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{start_idx}/InputB_TOT.pt')
+	os.makedirs('/home/a.mosa/Ameer/PTQ4ViT_Firas/OutputFiles/Group_{start_idx}', exist_ok=True)
+	torch.save(all_util, '/home/a.mosa/Ameer/PTQ4ViT_Firas/OutputFiles/Group_{start_idx}/all_util.pt')
+	torch.save(Accumulator_TOT, '/home/a.mosa/Ameer/PTQ4ViT_Firas/OutputFiles/Group_{start_idx}/Accumulator_TOT.pt')
+	torch.save(InputA_TOT, '/home/a.mosa/Ameer/PTQ4ViT_Firas/OutputFiles/Group_{start_idx}/InputA_TOT.pt')
+	torch.save(InputB_TOT, '/home/a.mosa/Ameer/PTQ4ViT_Firas/OutputFiles/Group_{start_idx}/InputB_TOT.pt')
 	#print("Cycles = ", cycles)
 	#print(dut.shape)
 	return dut

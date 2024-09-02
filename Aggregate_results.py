@@ -1,3 +1,4 @@
+import os
 import torch
 import pandas as pd
 
@@ -9,7 +10,8 @@ def csvFilesMaker(all_util, Accumulator_TOT, InputA_TOT, InputB_TOT, totalCycles
 		InputB_TOT = InputB_TOT/totalCycles
 
 		filenamek_csv = "UtilityFor"+str(dim)+"X"+str(dim)+"Dim.csv"
-		Destination_path = "/home/firasramadan/PTQ4ViT_SA_SP/OutputFiles/" #"/home/firasramadan/miniconda3/project_quantization_8bit/c_smt_sa/OutputFiles/Group-" + str(GroupID)+ "/"
+		Destination_path = "/home/firasramadan/PTQ4ViT_SA_SP/OutputFiles/SP/"
+		os.makedirs('/home/firasramadan/PTQ4ViT_SA_SP/OutputFiles/SP', exist_ok=True)
 		all_util_df = pd.DataFrame(all_util[:,:,0].numpy())
 		all_util_df.to_csv(Destination_path + filenamek_csv,header = False, index = False)
     
@@ -54,28 +56,28 @@ def load_csv(file_path):
     return tensor
 
 def main():
-    dim = 128 #dim of the SA
+	dim = 128 #dim of the SA
 
-    all_util = torch.zeros(dim,dim,17)
-    Accumulator_TOT = torch.zeros(dim,dim,32)
-    InputA_TOT = torch.zeros(dim,dim,8)
-    InputB_TOT = torch.zeros(dim,dim,8)
-    totalCycles=0
-    for i in range(50):
-        # Specify the file path of the checkpoint
-        all_util_file = f'/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{i*2}/all_util.pt'
+	all_util = torch.zeros(dim,dim,17)
+	Accumulator_TOT = torch.zeros(dim,dim,32)
+	InputA_TOT = torch.zeros(dim,dim,8)
+	InputB_TOT = torch.zeros(dim,dim,8)
+	totalCycles = 5382144
 
-        # Load the checkpoint
-        checkpoint = load_checkpoint(checkpoint_file)
+	for i in range(1):
+		# Specify the file path of the checkpoint
+		all_util_file = f'/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{i*2}/all_util.pt'
+		Accumulator_TOT_file = f'/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{i*2}/Accumulator_TOT.pt'
+		InputA_TOT_file = f'/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{i*2}/InputA_TOT.pt'
+		InputB_TOT_file = f'/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/Group_{i*2}/InputB_TOT.pt'
 
-        # Load the tensors from the checkpoint
-        all_util += torch.tensor(checkpoint['all_util'])
-        Accumulator_TOT += torch.tensor(checkpoint['Accumulator_TOT'])
-        InputA_TOT += torch.tensor(checkpoint['InputA_TOT'])
-        InputB_TOT += torch.tensor(checkpoint['InputB_TOT'])
-        totalCycles += checkpoint['totalCycles']
+    	# Load the tensors from the checkpoint
+		all_util += torch.load(all_util_file)
+		Accumulator_TOT += torch.load(Accumulator_TOT_file)
+		InputA_TOT += torch.load(InputA_TOT_file)
+		InputB_TOT += torch.load(InputB_TOT_file)
 	
-    csvFilesMaker(all_util, Accumulator_TOT, InputA_TOT, InputB_TOT, totalCycles, dim)
+	csvFilesMaker(all_util, Accumulator_TOT, InputA_TOT, InputB_TOT, totalCycles, dim)
 	
 
 if __name__ == "__main__":
