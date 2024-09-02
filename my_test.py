@@ -1,6 +1,5 @@
 #packages that need to be install: torch, torchVision, timm, 
 from torch.nn.modules import module
-from Matmul_SA import save_results
 from ameer_example.test_vit import *
 from quant_layers.conv import MinMaxQuantConv2d
 from quant_layers.linear import MinMaxQuantLinear, PTQSLQuantLinear
@@ -100,7 +99,6 @@ if __name__=='__main__':
     acc_end_time = time.time()
     print(f"original accuracy: {acc}")
     print(f"original run time: {(acc_end_time-acc_start_time)/60}min")
-    save_results()
     # for j in range(6):
     #     model = copy.deepcopy(net)
     #     for i in range(12):
