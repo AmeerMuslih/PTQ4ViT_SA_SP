@@ -60,7 +60,7 @@ if __name__=='__main__':
     cfg = cfg_modifier(linear_ptq_setting=(1,1,1), metric="hessian", bit_setting=(8,8))
     #os.chdir('.') #/raid/ori.sch/PTQ4ViT
     #RUN_ITER = 300
-    IMG_PATH = '/datasets/ImageNet'
+    IMG_PATH = 'home/firasramadan/Firas/Imagenet'
     start_idx = int(sys.argv[1])
     assert start_idx >= 0 and start_idx < 1000
     print(f"Firstly Classifying image: {start_idx}")
