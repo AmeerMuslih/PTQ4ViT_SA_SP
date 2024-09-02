@@ -19,7 +19,6 @@ all_util = torch.zeros(dim,dim,17)
 Accumulator_TOT = torch.zeros(dim,dim,32)
 InputA_TOT = torch.zeros(dim,dim,8)
 InputB_TOT = torch.zeros(dim,dim,8)
-totalCycles=torch.zeros(1)
 		
 
 def percentage_of_zeros(tensor):
@@ -43,22 +42,20 @@ def matmul_sa(tensor_a, tensor_b):
 	b = tensor_b
 	#print("Percentage of zeroes A = ", percentage_of_zeros(a))
 	#print("Percentage of zeroes B = ", percentage_of_zeros(b))
-	dut, util, cycles, PUs_access_count,AccumulatorBitsCount,Input_A_BitsCount,Input_B_BitsCount,_,_,_,_ = c_smt_sa.exec(a[None,:,:].detach().cpu(),b[:,:].detach().cpu(), dim, 1, 1024)
+	dut, util, _, PUs_access_count,AccumulatorBitsCount,Input_A_BitsCount,Input_B_BitsCount,_,_,_,_ = c_smt_sa.exec(a[None,:,:].detach().cpu(),b[:,:].detach().cpu(), dim, 1, 1024)
 	all_util += PUs_access_count
 	Accumulator_TOT += AccumulatorBitsCount
 	InputA_TOT += Input_A_BitsCount
 	InputB_TOT += Input_B_BitsCount
-	totalCycles += cycles
 	checkpoint = {
 		'all_util': all_util,
 		'Accumulator_TOT': Accumulator_TOT,
 		'InputA_TOT': InputA_TOT,
 		'InputB_TOT': InputB_TOT,
-		'totalCycles': totalCycles
 	}
 
 	# Save checkpoint to file
-	checkpoint_file = f'/home/a.mosa/Ameer/PTQ4ViT_Firas/OutputFiles/image_{start_idx}_results.txt'
+	checkpoint_file = f'/home/a.mosa/Ameer/PTQ4ViT_Firas/OutputFiles/image_{start_idx}_results.csv'
 	with open(checkpoint_file, 'w') as f:
 		f.write(str(checkpoint))
 
