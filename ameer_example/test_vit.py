@@ -41,7 +41,7 @@ def test_classification(net,test_loader, start_idx=0, max_iteration=None, descri
             pos+=pos_num
             tot+=inp.size(0)
             q.set_postfix({"acc":pos/tot})
-            if i >= max_iteration:
+            if i >= max_iteration+start_idx:
                 break
     print(pos/tot)
     return pos/tot
