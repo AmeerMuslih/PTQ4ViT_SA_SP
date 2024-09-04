@@ -4,10 +4,10 @@ import pandas as pd
 
 def csvFilesMaker(all_util, Accumulator_TOT, InputA_TOT, InputB_TOT, totalCycles, dim):
 		#normalize the results by number of cycles
-		all_util = all_util/totalCycles
-		Accumulator_TOT = Accumulator_TOT/totalCycles
-		InputA_TOT = InputA_TOT/totalCycles
-		InputB_TOT = InputB_TOT/totalCycles
+		all_util = (all_util/totalCycles)*100
+		Accumulator_TOT = (Accumulator_TOT/totalCycles)*100
+		InputA_TOT = (InputA_TOT/totalCycles)*100
+		InputB_TOT = (InputB_TOT/totalCycles)*100
 
 		filenamek_csv = "UtilityFor"+str(dim)+"X"+str(dim)+"Dim.csv"
 		Destination_path = "/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_SA_SP/OutputFiles/SP/" #"/home/a.mosa/Ameer/PTQ4ViT_Firas/OutputFiles/SP/"
