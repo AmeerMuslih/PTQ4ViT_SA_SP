@@ -75,7 +75,7 @@ if __name__=='__main__':
 
     wrapped_modules=net_wrap.wrap_modules_in_net(net,quant_cfg)
 
-    g=datasets.CIFARLoaderGenerator(IMG_PATH,'cifar100',32,32,2, kwargs={"model":net}) 
+    g=datasets.CIFARLoaderGenerator(IMG_PATH,'cifar10',32,32,2, kwargs={"model":net}) 
     test_loader=g.test_loader()
     
     weights_path = f"./weights/{name}_cifar.pth"
