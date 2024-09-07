@@ -60,7 +60,7 @@ if __name__=='__main__':
     cfg = cfg_modifier(linear_ptq_setting=(1,1,1), metric="hessian", bit_setting=(8,8))
     #os.chdir('.') #/raid/ori.sch/PTQ4ViT
     #RUN_ITER = 300
-    IMG_PATH = '/home/firasramadan/Firas/Imagenet' #'/datasets/ImageNet' #
+    IMG_PATH = '/datasets/cifar-100-python' #'/datasets/ImageNet' #
     start_idx = int(sys.argv[1])
     assert start_idx >= 0 and start_idx < 1000
     print(f"Firstly Classifying image: {start_idx}")
@@ -75,10 +75,10 @@ if __name__=='__main__':
 
     wrapped_modules=net_wrap.wrap_modules_in_net(net,quant_cfg)
 
-    g=datasets.ViTImageNetLoaderGenerator(IMG_PATH,'imagenet',32,32,2, kwargs={"model":net}) 
+    g=datasets.CIFARLoaderGenerator(IMG_PATH,'cifar100',32,32,2, kwargs={"model":net}) 
     test_loader=g.test_loader()
     
-    weights_path = f"./weights/{name}.pth"
+    weights_path = f"./weights/{name}_cifar.pth"
     if os.path.exists(weights_path):
         weights = torch.load(weights_path, map_location=torch.device('cpu'))
         set_model_weight(wrapped_modules, weights)
