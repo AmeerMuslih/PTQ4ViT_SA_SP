@@ -22,7 +22,7 @@ class MinMaxQuantMatMul(nn.Module):
     
     def forward(self, A,B):
         if self.mode=='raw':   
-            out=self.calibration_step23(A,B)
+            out=A@B
         elif self.mode== "quant_forward":
             out=self.quant_forward(A,B)
         elif self.mode=="calibration_step1":
@@ -53,13 +53,13 @@ class MinMaxQuantMatMul(nn.Module):
         #x_sim.mul_(interval)
         return x_sim
     
-    def quant_forward1(self,A,B):
+    def quant_forward(self,A,B):
         assert self.calibrated is not None,f"You should run calibrate_forward before run quant_forward for {self}"
         A_sim=self.quant_input(A,self.A_interval,self.A_qmax)
         B_sim=self.quant_input(B,self.B_interval,self.B_qmax)
         #print("mul 2")
-        #out=A_sim@B_sim
-        out = self.SA_mul(A_sim, B_sim)
+        out=A_sim@B_sim
+        #out = self.SA_mul(A_sim, B_sim)
         out.mul_(self.A_interval).mul_(self.B_interval)
         return out
 
@@ -71,12 +71,12 @@ class MinMaxQuantMatMul(nn.Module):
         self.raw_out=out.cpu().detach()
         return out
     
-    def calibration_step23(self,A,B):
+    def calibration_step2(self,A,B):
         # step2: search for the best S^w and S^o of each layer
         self.A_interval=(A.data.abs().max()/(self.A_qmax-0.5)).detach()
         self.B_interval=(B.data.abs().max()/(self.B_qmax-0.5)).detach()
         self.calibrated=True
-        out=self.quant_forward1(A,B)        
+        out=self.quant_forward(A,B)        
         return out
 
 class PTQSLQuantMatMul(MinMaxQuantMatMul):
