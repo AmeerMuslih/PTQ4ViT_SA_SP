@@ -57,7 +57,7 @@ class MinMaxQuantMatMul(nn.Module):
         global layer
         bit_flips = None
         if 'bit_flips' in os.environ:
-            bit_flips = int(os.environ['start_idx'])
+            bit_flips = int(os.environ['bit_flips'])
         bit_flips_per_2d_mul = math.ceil((bit_flips//(X*Y))*(4/3)) if layer%2==0 else math.ceil((bit_flips//(X*Y))*(2/3))
 
         X, Y, Z, W = A.shape
