@@ -66,13 +66,12 @@ class MinMaxQuantMatMul(nn.Module):
 
         bit_flips_per_2d_mul = math.ceil((bit_flips//(X*Y))*(4/3)) if layer%2==0 else math.ceil((bit_flips//(X*Y))*(2/3))
 
-        result = torch.zeros((X, Y, Z, L))
+        result = torch.zeros((X, Y, Z, L)).cuda()
 
         for i in range(X):
             for j in range(Y):
                 result[i, j] = matmul_FI(A[i, j], B[i, j],bit_flips_per_2d_mul)
         return result
-
 
     def quant_input(self,x,interval,qmax):
         x_sim=(x/interval).round_().clamp_(-qmax,qmax-1)
@@ -100,8 +99,8 @@ class MinMaxQuantMatMul(nn.Module):
     
     def calibration_step23(self,A,B):
         # step2: search for the best S^w and S^o of each layer
-        self.A_interval=(A.data.abs().max()/(self.A_qmax-0.5)).detach()
-        self.B_interval=(B.data.abs().max()/(self.B_qmax-0.5)).detach()
+        self.A_interval=(A.data.abs().max()/(self.A_qmax-0.5)).cuda()
+        self.B_interval=(B.data.abs().max()/(self.B_qmax-0.5)).cuda()
         self.calibrated=True
         out=self.quant_forward1(A,B)        
         return out
