@@ -10,7 +10,6 @@ def bitflip(value, bit):
     #return value
 
 def bitflips_distribution_per_tiles(output_tmp, bitflips_num, regions_working, SA_region_A_B_rows, SA_region_C_D_rows, SA_region_A_C_cols, SA_region_B_D_cols):
-    print("Bitflips number: ", bitflips_num)
     total_rows_working = SA_region_A_B_rows
     total_cols_working = SA_region_A_C_cols
     if ("D" in regions_working):
