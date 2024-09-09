@@ -2,7 +2,7 @@
 
 num_images=$1
 num_runs=$2
-$bit_flips=$3
+bit_flips=$3
 
 for ((i=0; i<num_runs; i+=1))
 do
