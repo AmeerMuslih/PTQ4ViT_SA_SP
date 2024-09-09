@@ -78,10 +78,10 @@ if __name__=='__main__':
 
     wrapped_modules=net_wrap.wrap_modules_in_net(net,quant_cfg)
 
-    g=datasets.ViTImageNetLoaderGenerator(IMG_PATH,'cifar10',32,32,2, kwargs={"model":net}) 
+    g=datasets.ViTImageNetLoaderGenerator(IMG_PATH,'imagenet',32,32,2, kwargs={"model":net}) 
     test_loader=g.test_loader()
     
-    weights_path = f"./weights/{name}_cifar.pth"
+    weights_path = f"./weights/{name}.pth"
     if os.path.exists(weights_path):
         weights = torch.load(weights_path, map_location=torch.device('cuda'))
         set_model_weight(wrapped_modules, weights)
