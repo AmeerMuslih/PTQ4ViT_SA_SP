@@ -64,7 +64,7 @@ class MinMaxQuantMatMul(nn.Module):
         _, _, _, L = B.shape
         #print(B.shape)
 
-        bit_flips_per_2d_mul = math.ceil((bit_flips//(X*Y))*(4/3)) if layer%2==0 else math.ceil((bit_flips//(X*Y))*(2/3))
+        bit_flips_per_2d_mul = math.ceil(float((bit_flips//(X*Y)))*(4/3)) if layer%2==0 else math.ceil(float((bit_flips//(X*Y)))*(2/3))
         layer+=1
         result = torch.zeros((X, Y, Z, L)).cuda()
 
