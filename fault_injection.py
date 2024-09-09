@@ -41,7 +41,7 @@ def matmul_FI(x_unfolded_expanded, w_unfolded_expanded, bitflip_per_mul):
     w_num_of_tiles = math.ceil(w_unfolded_expanded.size(1)/SA_DIM)
     number_of_tiles_multiplications = x_num_of_tiles * w_num_of_tiles
     bitflip_per_tile_mul = int(bitflip_per_mul/number_of_tiles_multiplications)
-    output_mat_final = torch.zeros([x_num_of_tiles*SA_DIM, w_num_of_tiles*SA_DIM]).cuda()
+    output_mat_final = torch.zeros([x_num_of_tiles*SA_DIM, w_num_of_tiles*SA_DIM]).cpu()
     regions_working= ["A","B","C","D"]
     total_tiles += number_of_tiles_multiplications
     #num_integers_np = 20
@@ -50,23 +50,23 @@ def matmul_FI(x_unfolded_expanded, w_unfolded_expanded, bitflip_per_mul):
         flag_x_padded = False
         flag_w_padded = False
         for j in range(0, w_num_of_tiles):
-            x_current_tile = x_unfolded_expanded[(i)*SA_DIM:((i+1)*SA_DIM), :].cuda()
+            x_current_tile = x_unfolded_expanded[(i)*SA_DIM:((i+1)*SA_DIM), :].cpu()
             
             if (j == w_num_of_tiles-1) and w_unfolded_expanded.size(1)%SA_DIM != 0:
-                zero_padded_mat_w = torch.zeros([w_unfolded_expanded.size(0), SA_DIM]).cuda()
-                zero_padded_mat_w[:, 0:w_unfolded_expanded.size(1)-(j*SA_DIM)] = w_unfolded_expanded[:, SA_DIM*(j):].cuda()
+                zero_padded_mat_w = torch.zeros([w_unfolded_expanded.size(0), SA_DIM]).cpu()
+                zero_padded_mat_w[:, 0:w_unfolded_expanded.size(1)-(j*SA_DIM)] = w_unfolded_expanded[:, SA_DIM*(j):].cpu()
                 w_current_tile = zero_padded_mat_w
                 flag_w_padded = True
             else:
-                w_current_tile = w_unfolded_expanded[:, (j)*SA_DIM:((j+1)*SA_DIM)].cuda()
+                w_current_tile = w_unfolded_expanded[:, (j)*SA_DIM:((j+1)*SA_DIM)].cpu()
             #globals_.hist_x += hist_x_tiles(x_current_tile,hist_x)
             #globals_.hist_w += hist_w_tiles(w_current_tile,hist_w)
             #plt.hist(x_current_tile)
             #plt.savefig('foo.png', bbox_inches='tight')
             #plt.close()
             if (i == x_num_of_tiles-1) and x_unfolded_expanded.size(0)%SA_DIM != 0:
-                zero_padded_mat_x = torch.zeros([SA_DIM, x_unfolded_expanded.size(1)]).cuda()
-                zero_padded_mat_x[0:x_unfolded_expanded.size(0)-(i*SA_DIM), :] = x_unfolded_expanded[SA_DIM*i:, :].cuda()
+                zero_padded_mat_x = torch.zeros([SA_DIM, x_unfolded_expanded.size(1)]).cpu()
+                zero_padded_mat_x[0:x_unfolded_expanded.size(0)-(i*SA_DIM), :] = x_unfolded_expanded[SA_DIM*i:, :].cpu()
                 x_current_tile = zero_padded_mat_x
                 flag_x_padded = True
 
@@ -92,8 +92,8 @@ def matmul_FI(x_unfolded_expanded, w_unfolded_expanded, bitflip_per_mul):
     return output_mat_final
 
 if __name__ == "__main__":
-    X = torch.randint(0, 2**6, (197, 64)).cuda()
-    W = torch.randint(0, 2**6, (64, 197)).cuda()
+    X = torch.randint(0, 2**6, (197, 64)).cpu()
+    W = torch.randint(0, 2**6, (64, 197)).cpu()
     bitFlips_number=500000
     bitflip_per_layer = bitFlips_number/24
     bitflip_per_mul = bitflip_per_layer/384
