@@ -6,8 +6,8 @@ total_tiles = 0
 SA_DIM=128
 
 def bitflip(value, bit):
-    #return int(value) ^ (1 << bit)
-    return value
+    return int(value) ^ (1 << bit)
+    #return value
 
 def bitflips_distribution_per_tiles(output_tmp, bitflips_num, regions_working, SA_region_A_B_rows, SA_region_C_D_rows, SA_region_A_C_cols, SA_region_B_D_cols):
     print("Bitflips number: ", bitflips_num)
