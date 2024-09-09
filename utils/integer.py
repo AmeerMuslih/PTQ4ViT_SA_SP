@@ -14,14 +14,14 @@ def quantize_int_weight(module):
     assert module.w_bit == 8, f"module {module}'s weight is quantized with {module.w_bit} bits"
 
     w_int = (module.weight/module.w_interval).round_().clamp_(-module.w_qmax, module.w_qmax-1)
-    w_int = w_int.cpu().detach().to(torch.int8)
+    w_int = w_int.cuda().detach().to(torch.int8)
     return w_int
 
 def dequantize_int_weight(module, w_int):
     """
     Make sure it's the same module that generates w_int
     """
-    w_sim = module.w_interval.cpu() * w_int.float()
+    w_sim = module.w_interval.cuda() * w_int.float()
     return w_sim
 
 def quantize_matmul_input(input, interval, qmax, n_G, n_V, n_H, crb_groups, crb_rows, crb_cols):
@@ -64,7 +64,7 @@ def quantize_int_activation(module, input):
         int_input_neg = (x/module.a_neg_interval).round_().clamp_(-module.a_qmax+1, 0).abs()
         int_input_neg = int_input_neg.detach().to(torch.uint8)
 
-        int_input = (int_input_pos + int_input_neg).cpu()
+        int_input = (int_input_pos + int_input_neg).cuda()
         module.int_input = [int_input]
     
     elif isinstance(module, MinMaxQuantLinear):
@@ -72,7 +72,7 @@ def quantize_int_activation(module, input):
 
         x = input[0]
         int_input = (x/module.a_interval).round_().clamp_(-module.a_qmax, module.a_qmax-1)
-        int_input = int_input.cpu().detach().to(torch.int8)
+        int_input = int_input.cuda().detach().to(torch.int8)
 
         module.int_input = [int_input]
     
@@ -88,10 +88,10 @@ def quantize_int_activation(module, input):
         A_low = (A.clamp(0, module.split)/module.A_interval).round_().clamp_(0,module.A_qmax-1)
         A_low = A_low.detach().to(torch.uint8)
         
-        A_int = (A_high + A_low).cpu()
+        A_int = (A_high + A_low).cuda()
 
         B_int = quantize_matmul_input(B,module.B_interval,module.B_qmax,module.n_G_B,module.n_V_B,module.n_H_B,module.crb_groups_B,module.crb_rows_B,module.crb_cols_B)
-        B_int = B_int.cpu().detach().to(torch.int8)
+        B_int = B_int.cuda().detach().to(torch.int8)
 
         module.int_input = [A_int, B_int]
 
@@ -102,10 +102,10 @@ def quantize_int_activation(module, input):
         A, B = input[0], input[1]
 
         A_int = quantize_matmul_input(A,module.A_interval,module.A_qmax,module.n_G_A,module.n_V_A,module.n_H_A,module.crb_groups_A,module.crb_rows_A,module.crb_cols_A)
-        A_int = A_int.cpu().detach().to(torch.int8)
+        A_int = A_int.cuda().detach().to(torch.int8)
 
         B_int = quantize_matmul_input(B,module.B_interval,module.B_qmax,module.n_G_B,module.n_V_B,module.n_H_B,module.crb_groups_B,module.crb_rows_B,module.crb_cols_B)
-        B_int = B_int.cpu().detach().to(torch.int8)
+        B_int = B_int.cuda().detach().to(torch.int8)
 
         module.int_input = [A_int, B_int]
 

@@ -67,7 +67,10 @@ if __name__=='__main__':
     num_iter = int(sys.argv[2])
     assert num_iter >= 0 and num_iter < 1000
     print(f"Number of iterations: {num_iter}")
-    os.environ['start_idx'] = str(start_idx)
+    bit_flips = int(sys.argv[3])
+    assert bit_flips >= 0
+    print(f"Number of bit flips: {bit_flips}")
+    os.environ['bit_flips'] = str(bit_flips//24)
     quant_cfg = init_config(config_name)
     quant_cfg = cfg(quant_cfg)
 
@@ -80,7 +83,7 @@ if __name__=='__main__':
     
     weights_path = f"./weights/{name}_cifar.pth"
     if os.path.exists(weights_path):
-        weights = torch.load(weights_path, map_location=torch.device('cpu'))
+        weights = torch.load(weights_path, map_location=torch.device('cuda'))
         set_model_weight(wrapped_modules, weights)
         print("weights loaded")
     else:

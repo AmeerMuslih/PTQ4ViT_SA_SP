@@ -87,6 +87,6 @@ def get_net(name):
             setattr(module, "matmul2", MatMul())
             module.forward = MethodType(window_attention_forward, module)
 
-    net.cpu()
+    net.cuda()
     net.eval()
     return net
