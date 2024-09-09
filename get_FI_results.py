@@ -2,7 +2,7 @@ import csv
 import os
 
 # Directory where the files are located
-directory = '/home/a.mosa/Ameer/PTQ4ViT_Firas'
+directory = '/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_FI'
 
 # List to store the results
 results = []
