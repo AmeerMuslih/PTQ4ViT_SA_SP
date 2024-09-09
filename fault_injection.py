@@ -71,7 +71,7 @@ def matmul_FI(x_unfolded_expanded,w_unfolded_expanded,bitflip_per_mul):
                 x_current_tile = zero_padded_mat_x
                 flag_x_padded = True
 
-            output_tmp = torch.matmul(x_current_tile.long(),w_current_tile.long())
+            output_tmp = torch.matmul(x_current_tile,w_current_tile)
             if (flag_x_padded==True and flag_w_padded==True):
                 regions_working = ["A"]
             elif (flag_x_padded==True and flag_w_padded==False):
