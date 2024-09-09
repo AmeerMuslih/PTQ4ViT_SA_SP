@@ -100,8 +100,8 @@ if __name__=='__main__':
     acc_start_time = time.time()
     acc = test_classification(net,test_loader, description=quant_cfg.ptqsl_linear_kwargs["metric"], start_idx=start_idx, max_iteration=num_iter)
     acc_end_time = time.time()
-    print(f"original accuracy: {acc}")
-    print(f"original run time: {(acc_end_time-acc_start_time)/60}min")
+    print(f"accuracy: {acc}")
+    print(f"run time: {(acc_end_time-acc_start_time)/60}min")
     # for j in range(6):
     #     model = copy.deepcopy(net)
     #     for i in range(12):
