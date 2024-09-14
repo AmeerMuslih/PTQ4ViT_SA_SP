@@ -1,15 +1,16 @@
 import csv
 import os
+import sys
 
 # Directory where the files are located
 directory = '/home/firasramadan/miniconda3/Ameer_Project_Transformers/PTQ4ViT_FI'
 
 # List to store the results
 results = []
-
+bit_flips = int(sys.argv[1])
 # Iterate over the files in the directory
 for filename in os.listdir(directory):
-    if filename.startswith('output_'):
+    if filename.startswith(f'output_{bit_flips}_'):
         filepath = os.path.join(directory, filename)
         with open(filepath, 'r') as file:
             lines = file.readlines()
